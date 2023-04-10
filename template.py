@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
 from datetime import datetime
+import pytz #time zone
 import plotly.graph_objects as go
 
 now = datetime.now()
@@ -47,33 +48,52 @@ date_time = {     "text-align":"center",
                   'height': '40vh'
                   }
 
-time_templates = {"background-color":"rgba(179, 218, 255,.5)",
-                  "height":"13vh",
-                  "width":"20vw",
-                  "position":"relative",
+# time_templates = {"background-color":"rgba(179, 218, 255,.5)",
+#                   "height":"13vh",
+#                   "width":"20vw",
+#                   "position":"relative",
+#                   "font-size":"3vw",
+#                   "font-weight":"bold",
+#                   "color":"rgba(255, 255, 255,1)",
+#                   "text-align":"center",
+#                   "align-items": "center",
+#                   "display":"flex",
+#                   "justify-content": "center",
+#                   "border-radius":"25px",
+#                   'text-shadow': '2px 2px #000000',
+#                   }
+
+# date_templates = {"background-color":"rgba(179, 218, 255,.5)",
+#                   "height":"13vh",
+#                   "width":"20vw",
+#                   "position":"relative",
+#                   "font-size":"3vw",
+#                   "font-weight":"bold",
+#                   "color":"rgba(255, 255, 255,1)",
+#                   "text-align":"center",
+#                   "align-items": "center",
+#                   "display":"flex",
+#                   "justify-content": "center",
+#                   "border-radius":"25px",
+#                   'text-shadow': '2px 2px #000000'}
+
+time_templates = {"position":"relative",
                   "font-size":"3vw",
                   "font-weight":"bold",
                   "color":"rgba(255, 255, 255,1)",
                   "text-align":"center",
-                  "align-items": "center",
                   "display":"flex",
                   "justify-content": "center",
-                  "border-radius":"25px",
                   'text-shadow': '2px 2px #000000',
                   }
 
-date_templates = {"background-color":"rgba(179, 218, 255,.5)",
-                  "height":"13vh",
-                  "width":"20vw",
-                  "position":"relative",
-                  "font-size":"3vw",
+date_templates = {"position":"relative",
+                  "font-size":"1.2vw",
                   "font-weight":"bold",
                   "color":"rgba(255, 255, 255,1)",
                   "text-align":"center",
-                  "align-items": "center",
                   "display":"flex",
                   "justify-content": "center",
-                  "border-radius":"25px",
                   'text-shadow': '2px 2px #000000'}
 
 gauge = {"background-color":"rgba(179, 218, 255,.5)",
@@ -96,9 +116,11 @@ app.layout = html.Div(
                     html.Div(dcc.Graph(id="gauge-light",style=gauge_templates),style=gauge),
                     dcc.Interval(id="clock", interval=1000),
                     html.Div(children=[
-                        html.Div(id="time-title",style=time_templates),
-                        html.Div(id="date-title",style=date_templates),
-                        ],style=date_time),
+                        # html.Div(id="time-title",style=time_templates),
+                        # html.Div(id="date-title",style=date_templates),
+                        html.Div(id="time",style=time_templates),
+                        html.Div(id="date",style=date_templates)
+                        ])
                 ],style=upper
             ),
             html.Div(
@@ -155,27 +177,43 @@ app.layout = html.Div(
 
 
 
-app.clientside_callback(
-    """
-    function(n) {          
-        const local_time_str = new Date().toLocaleTimeString();                   
-        return local_time_str
-    }
-    """,
-    Output('time-title', 'children'),
-    Input('clock', 'n_intervals'),
-)
+# app.clientside_callback(
+#     """
+#     function(n) {          
+#         const local_time_str = new Date().toLocaleTimeString();                   
+#         return local_time_str
+#     }
+#     """,
+#     Output('time-title', 'children'),
+#     Input('clock', 'n_intervals'),
+# )
 
-app.clientside_callback(
-    """
-    function(n) {          
-        const local_date_str = new Date().toLocaleDateString();                   
-        return  local_date_str
-    }
-    """,
-    Output('date-title', 'children'),
-    Input('clock', 'n_intervals'),
-)
+# app.clientside_callback(
+#     """
+#     function(n) {          
+#         const local_date_str = new Date().toLocaleDateString();                   
+#         return  local_date_str
+#     }
+#     """,
+#     Output('date-title', 'children'),
+#     Input('clock', 'n_intervals'),
+# )
+
+@app.callback(Output("time", "children"), 
+            Input("clock", "n_intervals"))
+
+def update_time(n):
+    tz = pytz.timezone('Asia/Bangkok')
+    current_time = datetime.now(tz).strftime("%I:%M:%S %p")
+    return current_time
+
+@app.callback(Output("date", "children"), 
+            Input("clock", "n_intervals"))
+
+def update_time(n):
+    tz = pytz.timezone('Asia/Bangkok')
+    current_date = datetime.now(tz).strftime("%a %d %B %Y")
+    return current_date
 
 app.clientside_callback(
     """
