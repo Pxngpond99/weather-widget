@@ -22,7 +22,7 @@ upper = {"height":"45vh",
 lower = {"grid-template-columns":"auto auto auto auto auto",
         "height":"20vh",
         "width":"90vw",
-        "margin":"5vh 5vw 0 5vw",
+        "padding":"5vh 5vw 0 5vw",
         "display":"grid",
         "column-gap":"5vw"
         }
@@ -294,7 +294,7 @@ def update_output(value):
     domain = {'x': [0, 1], 'y': [0, 1]},
     value = 38,
     mode = "gauge+number+delta",
-    title = {'text': "Temperature"},
+    title = {'text': "Temperature (°C)"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
     gauge = {'axis': {'range': [0, 60], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":10},
              'bar': {'color': "#7CFC00", "line" : {"width":0}} ,
@@ -319,7 +319,7 @@ def update_output(value):
     mode = "gauge+number+delta",
     title = {'text': "Humidity"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
-    gauge = {'axis': {'range': [0, 100], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":20},
+    gauge = {'axis': {'range': [0, 100], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":10},
              'bar': {'color': "darkblue"},
              'bgcolor': "white",
              'steps' : [
@@ -342,7 +342,7 @@ def update_output(value):
     mode = "gauge+number+delta",
     title = {'text': "Light"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
-    gauge = {'axis': {'range': [0, 100], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":20},
+    gauge = {'axis': {'range': [0, 100], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":10},
              'bar': {'color': "#FFD700"},
              'bgcolor': "white",
              'steps' : [
