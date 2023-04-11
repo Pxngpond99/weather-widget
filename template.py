@@ -116,7 +116,7 @@ app.layout = html.Div(
                     html.Div(dcc.Graph(id="gauge-humidity",style=gauge_templates),style=gauge),
                     html.Div(dcc.Graph(id="gauge-light",style=gauge_templates),style=gauge),
                     dcc.Interval(id="interval", interval=30 * 1000, n_intervals=0),
-                    # dcc.Interval(id="clock", interval=1000),
+                    dcc.Interval(id="clock", interval=1000),
                     html.Div(children=[
                         # html.Div(id="time-title",style=time_templates),
                         # html.Div(id="date-title",style=date_templates),
