@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime
 import pytz #time zone
 import plotly.graph_objects as go
+import random
 
 now = datetime.now()
 current_time = now.strftime("%H:%M:%S")
@@ -114,7 +115,8 @@ app.layout = html.Div(
                     html.Div(dcc.Graph(id="gauge-temp",style=gauge_templates),style=gauge),
                     html.Div(dcc.Graph(id="gauge-humidity",style=gauge_templates),style=gauge),
                     html.Div(dcc.Graph(id="gauge-light",style=gauge_templates),style=gauge),
-                    dcc.Interval(id="clock", interval=1000),
+                    dcc.Interval(id="interval", interval=30 * 1000, n_intervals=0),
+                    # dcc.Interval(id="clock", interval=1000),
                     html.Div(children=[
                         # html.Div(id="time-title",style=time_templates),
                         # html.Div(id="date-title",style=date_templates),
@@ -325,12 +327,13 @@ app.clientside_callback(
 
 @app.callback(
     Output('gauge-temp', 'figure'),
-    Input('clock', 'n_intervals')
+    Input("interval", "n_intervals")
 )
 def update_output(value):
+    value = random.randrange(0, 60)
     fig_temp = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = 38,
+    value = value,
     mode = "gauge+number+delta",
     title = {'text': "Temperature (°C)"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
@@ -348,12 +351,13 @@ def update_output(value):
 
 @app.callback(
     Output('gauge-humidity', 'figure'),
-    Input('clock', 'n_intervals')
+    Input("interval", "n_intervals")
 )
 def update_output(value):
+    value = random.randrange(0, 100)
     fig_humidity = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = 80,
+    value = value,
     mode = "gauge+number+delta",
     title = {'text': "Humidity"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
@@ -371,12 +375,13 @@ def update_output(value):
 
 @app.callback(
     Output('gauge-light', 'figure'),
-    Input('clock', 'n_intervals')
+    Input("interval", "n_intervals")
 )
 def update_output(value):
+    value = random.randrange(0, 100)
     fig_light = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = 15,
+    value = value,
     mode = "gauge+number+delta",
     title = {'text': "Light"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
