@@ -242,6 +242,8 @@ app.clientside_callback(
             "height":"100vh",
             "width":"100vw",
             "position":"static",
+            "margin":"0",
+            "padding":"0",
       };
     }
     """,
