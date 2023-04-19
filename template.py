@@ -86,8 +86,23 @@ change_graph = {
 
 change_graph_template = {
     "display": "flex",
+    "flex-wrap":"wrap",
     "justify-content": "space-around",
     "margin-bottom":"1em"
+}
+
+graph_button = {
+    "background-image": "linear-gradient(to bottom, #B7E3FF, #08A2BD)",
+    "color": "white",
+    "border-radius": "20px",
+    "border": "1px solid #08A2BD",
+    "padding": "12px 24px",
+    "font-size": "1.2rem",
+    "font-weight": "600",
+    "box-shadow": "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    "transition": "all 0.3s ease",
+    "justify-content": "center",
+    "textAlign":"center",
 }
 
 app.layout = html.Div(
@@ -102,7 +117,6 @@ app.layout = html.Div(
                     html.Div([
                         html.Div(id="time",style=time_template),
                         html.Div(id="date",style=date_template),
-                        html.Div(className="fa-sharp fa-light fa-hourglass-clock"),
                         dcc.Interval(id="clock", interval=1000),
                     ],style=date_and_time)
                 ],md=3),
@@ -148,13 +162,34 @@ app.layout = html.Div(
                     [
                         html.Div([
                             html.Div(
-                                dbc.Button("Temperature",id="temperature_graph",n_clicks=0),
+                                dbc.Button(
+                                    [
+                                        html.Div(className="fa-solid fa-temperature-quarter fa-bounce",style={"margin":"0.2em", "font-size":"1.5rem"}),
+                                        "Temperature"
+                                    ],
+                                    id="temperature_graph",
+                                    n_clicks=0,
+                                    style=graph_button),
                             style=change_graph),
                             html.Div(
-                                dbc.Button("Humidity",id="humidity_graph",n_clicks=0),
+                                dbc.Button(
+                                    [
+                                        html.Div(className="fa-solid fa-droplet fa-bounce",style={"margin":"0.2em", "font-size":"1.5rem"}),
+                                        "Humidity",
+                                    ],
+                                    id="humidity_graph",
+                                    n_clicks=0,
+                                    style=graph_button),
                             style=change_graph),
                             html.Div(
-                                dbc.Button("Light",id="light_graph",n_clicks=0),
+                                dbc.Button(
+                                    [
+                                        html.Div(className="fa-solid fa-sun fa-bounce",style={"margin":"0.2em", "font-size":"1.5rem"}),
+                                        "Light"
+                                    ],
+                                    id="light_graph",
+                                    n_clicks=0,
+                                    style=graph_button),
                             style=change_graph)
                         ],style=change_graph_template),
                         
@@ -186,34 +221,26 @@ def update_time(n):
     return current_date
 
 
-app.clientside_callback(
-    """
-    function(n) {          
-    const now = new Date();
-    const hour = now.getHours();
-    let message = "";
-
-    if (hour >= 8 && hour <= 16) {
-        message = "url('static/day.jpg')";
-    } else if (hour >= 6 && hour <= 8) {
-        message = "url('static/morning.jpg')";
-    } else if (hour >= 16 && hour <= 18) {
-        message = "url('static/morning.jpg')";
-    } else {
+@app.callback(Output('image-title', 'style'),
+            Input('clock', 'n_intervals'))
+def update_time(n):
+    tz = pytz.timezone('Asia/Bangkok')
+    hour = int(datetime.now(tz).strftime("%H"))
+    if (hour >= 8 and hour <= 16) :
+        message = "url('static/day.jpg')"
+    elif (hour >= 6 and hour <= 8) :
+        message = "url('static/mornin.jpg')"
+    elif (hour >= 16 and hour <= 18) :
+        message = "url('static/morning.jpg')"
+    else :
         message = "url('static/night.jpg')"
-    }
-
-     return {
+    return {
             "background-image": message,
             "background-size":"cover",
             "background-position":"center",
             "background-attachment":"fixed",
-      };
-    }
-    """,
-    Output('image-title', 'style'),
-    Input('clock', 'n_intervals'),
-)
+            "overflow-y":"scroll"
+      }
 
 
 @app.callback(
