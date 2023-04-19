@@ -100,35 +100,26 @@ def update_time(n):
     return current_date
 
 
-app.clientside_callback(
-    """
-    function(n) {          
-    const now = new Date();
-    const hour = now.getHours();
-    let message = "";
-
-    if (hour >= 8 && hour <= 16) {
-        message = "url('static/day.jpg')";
-    } else if (hour >= 6 && hour <= 8) {
-        message = "url('static/morning.jpg')";
-    } else if (hour >= 16 && hour <= 18) {
-        message = "url('static/morning.jpg')";
-    } else {
+@app.callback(Output('image-title', 'style'),
+            Input('clock', 'n_intervals'))
+def update_time(n):
+    tz = pytz.timezone('Asia/Bangkok')
+    hour = int(datetime.now(tz).strftime("%H"))
+    if (hour >= 8 and hour <= 16) :
+        message = "url('static/day.jpg')"
+    elif (hour >= 6 and hour <= 8) :
+        message = "url('static/mornin.jpg')"
+    elif (hour >= 16 and hour <= 18) :
+        message = "url('static/morning.jpg')"
+    else :
         message = "url('static/night.jpg')"
-    }
-
-     return {
+    return {
             "background-image": message,
             "background-size":"cover",
             "background-position":"center",
             "background-attachment":"fixed",
             "overflow-y":"scroll"
-      };
-    }
-    """,
-    Output('image-title', 'style'),
-    Input('clock', 'n_intervals'),
-)
+      }
 
 
 @app.callback(
