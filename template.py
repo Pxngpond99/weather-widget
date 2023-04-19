@@ -7,199 +7,81 @@ import pytz #time zone
 import plotly.graph_objects as go
 import random
 
-now = datetime.now()
-current_time = now.strftime("%H:%M:%S")
-
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
 
+# style
 
-upper = {"height":"45vh",
-         "width":"100vw",
-         "top":"5vh",
-         "grid-template-columns": "19vw 19vw 19vw 20vw",
-         "display":"grid",
-         "padding":"5vh 5vw 0 5vw",
-         "column-gap":"4vw"}                  
+dashboard_template = {
+    "textAlign":"center",
+    "margin-top":"1em",
+    "padding":"1em"
+}
 
-lower = {"grid-template-columns":"auto auto auto auto auto",
-        "height":"20vh",
-        "width":"90vw",
-        "padding":"5vh 5vw 0 5vw",
-        "display":"grid",
-        "column-gap":"5vw"
-        }
-item = {"background-color":"rgba(179, 218, 255,.5)",
-        "grid-template-columns":"auto",
-        "display":"grid",
-        "row-gap":"2vw",
-        "padding":"3vh 0 3vh 0",
-        "border-radius":"25px",
-        "text-align":"center",
-        "align-items": "center",
-        "justify-content": "center",
-        "color":"rgba(255, 255, 255,1)",
-        'text-shadow': '2px 1px #000000' }
+dashboard_name = {
+    "font-size":"3em",
+    "font-weight":"bold",
+    "color":"rgba(255, 255, 255, 1)",
+    "text-shadow": "2px 2px #000000",
+}
 
-date_time = {     "text-align":"center",
-                  "align-items": "center",
-                  "display":"flex",
-                  "justify-content": "center",
-                  "grid-template-columns":"auto",
-                  "display":"grid",
-                  'height': '40vh'
-                  }
+date_and_time = {
+    "textAlign":"center",
+}
 
-# time_templates = {"background-color":"rgba(179, 218, 255,.5)",
-#                   "height":"13vh",
-#                   "width":"20vw",
-#                   "position":"relative",
-#                   "font-size":"3vw",
-#                   "font-weight":"bold",
-#                   "color":"rgba(255, 255, 255,1)",
-#                   "text-align":"center",
-#                   "align-items": "center",
-#                   "display":"flex",
-#                   "justify-content": "center",
-#                   "border-radius":"25px",
-#                   'text-shadow': '2px 2px #000000',
-#                   }
+time_template = {
+    "font-size":"2.5em",
+    "font-weight":"bold",
+    "color":"rgba(255, 255, 255, 1)",
+    "text-shadow": "2px 2px #000000"
+}
 
-# date_templates = {"background-color":"rgba(179, 218, 255,.5)",
-#                   "height":"13vh",
-#                   "width":"20vw",
-#                   "position":"relative",
-#                   "font-size":"3vw",
-#                   "font-weight":"bold",
-#                   "color":"rgba(255, 255, 255,1)",
-#                   "text-align":"center",
-#                   "align-items": "center",
-#                   "display":"flex",
-#                   "justify-content": "center",
-#                   "border-radius":"25px",
-#                   'text-shadow': '2px 2px #000000'}
-
-time_templates = {"position":"relative",
-                  "font-size":"3vw",
-                  "font-weight":"bold",
-                  "color":"rgba(255, 255, 255,1)",
-                  "text-align":"center",
-                  "display":"flex",
-                  "justify-content": "center",
-                  'text-shadow': '2px 2px #000000',
-                  }
-
-date_templates = {"position":"relative",
-                  "font-size":"1.2vw",
-                  "font-weight":"bold",
-                  "color":"rgba(255, 255, 255,1)",
-                  "text-align":"center",
-                  "display":"flex",
-                  "justify-content": "center",
-                  'text-shadow': '2px 2px #000000'}
+date_template = {
+    "font-size":"1em",
+    "font-weight":"bold",
+    "color":"rgba(255, 255, 255,1)",
+    "text-shadow": "2px 2px #000000"
+}
 
 gauge = {"background-color":"rgba(179, 218, 255,.5)",
-         "border-radius":"25px",
-         "text-align":"center",
-        "align-items": "center",
-        "display":"flex",
-        "justify-content": "center",
-        'width': '21vw', 
-        'height': '40vh'}
-
-gauge_templates = {'height': '37vh'}
+        "border-radius":"25px",
+        "textAlign":"center",
+        "display":"inline-block",
+        "margin":"2em",
+        "width": "30vw", 
+        "height": "40vh",
+        "text-shadow":"2px 2px 2px #000000",
+        }
 
 app.layout = html.Div(
-        children=[
-            html.Div(
-                children=[
-                    html.Div(dcc.Graph(id="gauge-temp",style=gauge_templates),style=gauge),
-                    html.Div(dcc.Graph(id="gauge-humidity",style=gauge_templates),style=gauge),
-                    html.Div(dcc.Graph(id="gauge-light",style=gauge_templates),style=gauge),
-                    dcc.Interval(id="interval", interval=30 * 1000, n_intervals=0),
-                    dcc.Interval(id="clock", interval=1000),
-                    html.Div(children=[
-                        # html.Div(id="time-title",style=time_templates),
-                        # html.Div(id="date-title",style=date_templates),
-                        html.Div(id="time",style=time_templates),
-                        html.Div(id="date",style=date_templates)
-                        ])
-                ],style=upper
-            ),
-            html.Div(
-                children=[
-                    html.Div(
-                        children=[
-                        html.Div(id="time-now"),
-                        html.Div("icon"),
-                        html.Div("light"),
-                        html.Div("temperature"),
-                        html.Div("humidity"),
-                        html.Div("rain")],style=item
-                    ),
-                    html.Div(
-                        children=[
-                        html.Div(id="time-next-1"),
-                        html.Div("icon"),
-                        html.Div("light"),
-                        html.Div("temperature"),
-                        html.Div("humidity"),
-                        html.Div("rain")],style=item
-                    ),
-                    html.Div(
-                        children=[
-                        html.Div(id="time-next-2"),
-                        html.Div("icon"),
-                        html.Div("light"),
-                        html.Div("temperature"),
-                        html.Div("humidity"),
-                        html.Div("rain")],style=item
-                    ),
-                    html.Div(
-                        children=[
-                        html.Div(id="time-next-3"),
-                        html.Div("icon"),
-                        html.Div("light"),
-                        html.Div("temperature"),
-                        html.Div("humidity"),
-                        html.Div("rain")],style=item
-                    ),
-                    html.Div(
-                        children=[
-                        html.Div(id="time-next-4"),
-                        html.Div("icon"),
-                        html.Div("light"),
-                        html.Div("temperature"),
-                        html.Div("humidity"),
-                        html.Div("rain")],style=item  
-                    ),
-                ],style=lower
-            )
-    ],id="image-title")
+    children=[
+        html.Div([
+            html.H2("Weather Dashboard",style=dashboard_name)
+        ], style=dashboard_template),
 
+        html.Div([
+            dbc.Row([
+                dbc.Col([
+                    html.Div([
+                        html.Div(id="time",style=time_template),
+                        html.Div(id="date",style=date_template),
+                        dcc.Interval(id="clock", interval=1000),
+                    ],style=date_and_time)
+                ],md=3),
 
+                dbc.Col([
+                    html.Div([
+                        dcc.Graph(id="gauge-temp",style=gauge),
+                        dcc.Graph(id="gauge-humidity",style=gauge),
+                        dcc.Graph(id="gauge-light",style=gauge),
+                        dcc.Graph(id="gauge-rain",style=gauge),
+                        dcc.Interval(id="interval", interval=30 * 1000, n_intervals=0),
+                    ])
+                ],md=9)
+            ])
+        ])
 
-
-# app.clientside_callback(
-#     """
-#     function(n) {          
-#         const local_time_str = new Date().toLocaleTimeString();                   
-#         return local_time_str
-#     }
-#     """,
-#     Output('time-title', 'children'),
-#     Input('clock', 'n_intervals'),
-# )
-
-# app.clientside_callback(
-#     """
-#     function(n) {          
-#         const local_date_str = new Date().toLocaleDateString();                   
-#         return  local_date_str
-#     }
-#     """,
-#     Output('date-title', 'children'),
-#     Input('clock', 'n_intervals'),
-# )
+    ],id="image-title"
+)
 
 @app.callback(Output("time", "children"), 
             Input("clock", "n_intervals"))
@@ -216,6 +98,7 @@ def update_time(n):
     tz = pytz.timezone('Asia/Bangkok')
     current_date = datetime.now(tz).strftime("%a %d %B %Y")
     return current_date
+
 
 app.clientside_callback(
     """
@@ -236,14 +119,10 @@ app.clientside_callback(
 
      return {
             "background-image": message,
-            "background-position":"center bottom",
-            "background-repeat":"no-repeat",
             "background-size":"cover",
-            "height":"100vh",
-            "width":"100vw",
-            "position":"static",
-            "margin":"0",
-            "padding":"0",
+            "background-position":"center",
+            "background-attachment":"fixed",
+            "overflow-y":"scroll"
       };
     }
     """,
@@ -251,81 +130,6 @@ app.clientside_callback(
     Input('clock', 'n_intervals'),
 )
 
-
-app.clientside_callback(
-    """
-    function(n) {
-        const now = new Date();
-        const hour = now.getHours();
-        const minutes = '00';
-        const am_pm = hour >= 12 ? 'PM' : 'AM';
-        const hour12 = hour % 12 || 12; 
-        return hour12 + ':' + minutes + ' ' + am_pm;
-    }
-    """,
-    Output('time-now', 'children'),
-    Input('clock', 'n_intervals'),
-)
-
-app.clientside_callback(
-    """
-    function(n) {
-        const now = new Date();
-        const hour = now.getHours() + 1;
-        const minutes = '00';
-        const am_pm = hour >= 12 ? 'PM' : 'AM';
-        const hour12 = hour % 12 || 12; 
-        return hour12 + ':' + minutes + ' ' + am_pm;
-    }
-    """,
-    Output('time-next-1', 'children'),
-    Input('clock', 'n_intervals'),
-)
-
-app.clientside_callback(
-    """
-    function(n) {
-        const now = new Date();
-        const hour = now.getHours() + 2;
-        const minutes = '00';
-        const am_pm = hour >= 12 ? 'PM' : 'AM';
-        const hour12 = hour % 12 || 12; 
-        return hour12 + ':' + minutes + ' ' + am_pm;
-    }
-    """,
-    Output('time-next-2', 'children'),
-    Input('clock', 'n_intervals'),
-)
-
-app.clientside_callback(
-    """
-    function(n) {
-        const now = new Date();
-        const hour = now.getHours() + 3;
-        const minutes = '00';
-        const am_pm = hour >= 12 ? 'PM' : 'AM';
-        const hour12 = hour % 12 || 12; 
-        return hour12 + ':' + minutes + ' ' + am_pm;
-    }
-    """,
-    Output('time-next-3', 'children'),
-    Input('clock', 'n_intervals'),
-)
-
-app.clientside_callback(
-    """
-    function(n) {
-        const now = new Date();
-        const hour = now.getHours() + 4;
-        const minutes = '00';
-        const am_pm = hour >= 12 ? 'PM' : 'AM';
-        const hour12 = hour % 12 || 12;
-        return hour12 + ':' + minutes + ' ' + am_pm;
-    }
-    """,
-    Output('time-next-4', 'children'),
-    Input('clock', 'n_intervals'),
-)
 
 @app.callback(
     Output('gauge-temp', 'figure'),
@@ -348,7 +152,7 @@ def update_output(value):
                  {'range': [35, 60], 'color': "#FF7F50"}],
              'threshold' : {'line': {'color': "rgba(0,0,0,0)", 'width': 4}, 'thickness': 0.75, 'value': 60}},
     ))
-    fig_temp.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)"},)
+    fig_temp.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)"})
     return fig_temp
 
 @app.callback(
@@ -397,6 +201,29 @@ def update_output(value):
     ))
     fig_light.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)",})
     return fig_light
+
+@app.callback(
+    Output('gauge-rain', 'figure'),
+    Input("interval", "n_intervals")
+)
+def update_output(value):
+    value = random.randrange(0, 100)
+    fig_rain = go.Figure(go.Indicator(
+    domain = {'x': [0, 1], 'y': [0, 1]},
+    value = value,
+    mode = "gauge+number+delta",
+    title = {'text': "Rain"},
+    delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
+    gauge = {'axis': {'range': [0, 100], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":10},
+             'bar': {'color': "#FFD700"},
+             'bgcolor': "white",
+             'steps' : [
+                 {'range': [0, 25], 'color': "#696969"},
+                 {'range': [25, 60], 'color': "#F0FFFF"},],
+             'threshold' : {'line': {'color': "rgba(0,0,0,0)", 'width': 4}, 'thickness': 0.75, 'value': 100}},
+    ))
+    fig_rain.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)",})
+    return fig_rain
 
 if __name__ == "__main__":
     app.run_server(debug=True)
