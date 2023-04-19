@@ -1,4 +1,4 @@
-from dash import Dash, dcc, html ,Input, Output
+from dash import Dash, dash, dcc, html ,Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
@@ -6,15 +6,15 @@ from datetime import datetime
 import pytz #time zone
 import plotly.graph_objects as go
 import random
+import dash
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
-
+df = px.data.gapminder()
 # style
 
 dashboard_template = {
     "textAlign":"center",
-    "margin-top":"1em",
-    "padding":"1em"
+    "padding":"1em 0 1em 0"
 }
 
 dashboard_name = {
@@ -26,31 +26,84 @@ dashboard_name = {
 
 date_and_time = {
     "textAlign":"center",
+    "margin-top":"2em",
 }
 
 time_template = {
-    "font-size":"2.5em",
+    "font-size":"3em",
     "font-weight":"bold",
     "color":"rgba(255, 255, 255, 1)",
     "text-shadow": "2px 2px #000000"
 }
 
 date_template = {
-    "font-size":"1em",
+    "font-size":"1.5em",
     "font-weight":"bold",
     "color":"rgba(255, 255, 255,1)",
     "text-shadow": "2px 2px #000000"
 }
 
-gauge = {"background-color":"rgba(179, 218, 255,.5)",
-        "border-radius":"25px",
-        "textAlign":"center",
-        "display":"inline-block",
-        "margin":"2em",
-        "width": "30vw", 
-        "height": "40vh",
-        "text-shadow":"2px 2px 2px #000000",
-        }
+gauge = {
+    "background-color":"rgba(179, 218, 255,.5)",
+    "border-radius":"25px",
+    "textAlign":"center",
+    "display":"inline-block",
+    "margin":"2em",
+    "width": "32vw", 
+    "height": "38vh",
+    "text-shadow":"2px 2px 2px #000000",
+}
+
+item = {
+    "background-color":"rgba(179, 218, 255,.5)",
+    "grid-template-columns":"auto",
+    "display":"grid",
+    "row-gap":"2.7vw",
+    "padding":"0 0 3vh 0",
+    "border-radius":"25px",
+    "textAlign":"center",
+    "color":"rgba(255, 255, 255,1)",
+    'text-shadow': '2px 1px #000000',
+    "font-size":"17px"
+}
+
+items = {
+    "grid-template-columns":"auto auto auto auto auto",
+    "height":"20vh",
+    "width":"90vw",
+    "padding":"5vh 5vw 0 5vw",
+    "display":"grid",
+    "column-gap":"5vw",
+}
+
+graph = {
+    "margin-top":"20em",
+    "padding":"1em 3em 3em 3em",
+}
+
+change_graph = {
+}
+
+change_graph_template = {
+    "display": "flex",
+    "flex-wrap":"wrap",
+    "justify-content": "space-around",
+    "margin-bottom":"1em"
+}
+
+graph_button = {
+    "background-image": "linear-gradient(to bottom, #B7E3FF, #08A2BD)",
+    "color": "white",
+    "border-radius": "20px",
+    "border": "1px solid #08A2BD",
+    "padding": "12px 24px",
+    "font-size": "1.2rem",
+    "font-weight": "600",
+    "box-shadow": "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    "transition": "all 0.3s ease",
+    "justify-content": "center",
+    "textAlign":"center",
+}
 
 app.layout = html.Div(
     children=[
@@ -77,7 +130,75 @@ app.layout = html.Div(
                         dcc.Interval(id="interval", interval=30 * 1000, n_intervals=0),
                     ])
                 ],md=9)
-            ])
+            ]),
+        ]),
+        
+        html.Div([
+            dbc.Row([
+                dbc.Col([
+                    html.Div([
+                        html.Div(id="time-now"),
+                        html.Div("icon"),
+                        html.Div("light"),
+                        html.Div("temperature"),
+                        html.Div("humidity"),
+                        html.Div("rain")
+                    ],style=item),
+                    html.Div([
+                        html.Div(id="time-next-1"),
+                        html.Div("icon"),
+                        html.Div("light"),
+                        html.Div("temperature"),
+                        html.Div("humidity"),
+                        html.Div("rain")
+                    ],style=item)
+                ],style=items)
+            ]),
+        ]),
+
+        html.Div([
+            dbc.Row(
+                dbc.CardBody(
+                    [
+                        html.Div([
+                            html.Div(
+                                dbc.Button(
+                                    [
+                                        html.Div(className="fa-solid fa-temperature-quarter fa-bounce",style={"margin":"0.2em", "font-size":"1.5rem"}),
+                                        "Temperature"
+                                    ],
+                                    id="temperature_graph",
+                                    n_clicks=0,
+                                    style=graph_button),
+                            style=change_graph),
+                            html.Div(
+                                dbc.Button(
+                                    [
+                                        html.Div(className="fa-solid fa-droplet fa-bounce",style={"margin":"0.2em", "font-size":"1.5rem"}),
+                                        "Humidity",
+                                    ],
+                                    id="humidity_graph",
+                                    n_clicks=0,
+                                    style=graph_button),
+                            style=change_graph),
+                            html.Div(
+                                dbc.Button(
+                                    [
+                                        html.Div(className="fa-solid fa-sun fa-bounce",style={"margin":"0.2em", "font-size":"1.5rem"}),
+                                        "Light"
+                                    ],
+                                    id="light_graph",
+                                    n_clicks=0,
+                                    style=graph_button),
+                            style=change_graph)
+                        ],style=change_graph_template),
+                        
+                        html.Div([
+                            dcc.Graph(id='live-graph')
+                        ]),
+                    ]
+                ),
+            style=graph)
         ])
 
     ],id="image-title"
@@ -215,6 +336,37 @@ def update_output(value):
     ))
     fig_rain.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)",})
     return fig_rain
+
+
+@app.callback(Output('live-graph', 'figure'),
+              [Input('temperature_graph', 'n_clicks'), 
+               Input('humidity_graph', 'n_clicks'),
+               Input('light_graph', 'n_clicks')])
+
+def update_graph(button1_clicks, button2_clicks, button3_clicks):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        graph_id = 'temperature_graph'
+    else:
+        graph_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        print(ctx.triggered)
+
+    if graph_id == 'temperature_graph':
+        fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop",
+                         color="continent", log_x=True, hover_name="country",
+                         size_max=60)
+        
+    elif graph_id == 'humidity_graph':
+        fig = px.scatter(df, x="gdpPercap", y="lifeExp",
+                        color="continent", log_x=True, hover_name="country",
+                        size_max=60)
+    else:
+        fig = px.scatter(df, x="lifeExp", y="gdpPercap", size="pop",
+                         color="continent", log_y=True, hover_name="country",
+                         size_max=60)
+        
+    return fig
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)
