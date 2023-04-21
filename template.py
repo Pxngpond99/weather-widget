@@ -7,6 +7,10 @@ import pytz #time zone
 import plotly.graph_objects as go
 import random
 import dash
+from data import value_temperature
+from data import value_humidity
+from data import value_light
+from data import value_raindrop
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
 df = px.data.gapminder()
@@ -68,16 +72,16 @@ item = {
 }
 
 items = {
-    "grid-template-columns":"auto auto auto auto auto",
+    "grid-template-columns":"auto auto",
     "height":"20vh",
-    "width":"90vw",
+    "width":"70vw",
     "padding":"5vh 5vw 0 5vw",
     "display":"grid",
     "column-gap":"5vw",
 }
 
 graph = {
-    "margin-top":"20em",
+    "margin-top":"28em",
     "padding":"1em 3em 3em 3em",
 }
 
@@ -134,11 +138,11 @@ app.layout = html.Div(
         ]),
         
         html.Div([
-            dbc.Row([
-                dbc.Col([
+            dbc.Row(
+                html.Div([
                     html.Div([
                         html.Div(id="time-now"),
-                        html.Div("icon"),
+                        html.Div(id="rain_icon_now"),
                         html.Div("light"),
                         html.Div("temperature"),
                         html.Div("humidity"),
@@ -146,14 +150,14 @@ app.layout = html.Div(
                     ],style=item),
                     html.Div([
                         html.Div(id="time-next-1"),
-                        html.Div("icon"),
+                        html.Div(id="rain_icon_next"),
                         html.Div("light"),
                         html.Div("temperature"),
                         html.Div("humidity"),
                         html.Div("rain")
                     ],style=item)
-                ],style=items)
-            ]),
+                ],style=items),
+            style={"display":"flex", "justify-content": "center"})
         ]),
 
         html.Div([
@@ -238,8 +242,7 @@ def update_time(n):
             "background-image": message,
             "background-size":"cover",
             "background-position":"center",
-            "background-attachment":"fixed",
-            "overflow-y":"scroll"
+            "background-attachment":"fixed"
       }
 
 
@@ -248,10 +251,9 @@ def update_time(n):
     Input("interval", "n_intervals")
 )
 def update_output(value):
-    value = random.randrange(0, 60)
     fig_temp = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value,
+    value = value_temperature(),
     mode = "gauge+number+delta",
     title = {'text': "Temperature (°C)"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
@@ -272,10 +274,9 @@ def update_output(value):
     Input("interval", "n_intervals")
 )
 def update_output(value):
-    value = random.randrange(0, 100)
     fig_humidity = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value,
+    value = value_humidity(),
     mode = "gauge+number+delta",
     title = {'text': "Humidity"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
@@ -293,15 +294,14 @@ def update_output(value):
 
 @app.callback(
     Output('gauge-light', 'figure'),
-    Input("interval", "n_intervals")
+    Input("interval", "n_intervals"),
 )
 def update_output(value):
-    value = random.randrange(0, 100)
     fig_light = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value,
+    value = value_light(),
     mode = "gauge+number+delta",
-    title = {'text': "Light"},
+    title = {'text': "Light (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
     gauge = {'axis': {'range': [0, 100], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":10},
              'bar': {'color': "#FFD700"},
@@ -319,12 +319,11 @@ def update_output(value):
     Input("interval", "n_intervals")
 )
 def update_output(value):
-    value = random.randrange(0, 100)
     fig_rain = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value,
+    value = value_raindrop(),
     mode = "gauge+number+delta",
-    title = {'text': "Rain"},
+    title = {'text': "Raindrop (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
     gauge = {'axis': {'range': [0, 100], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":10},
              'bar': {'color': "#FFD700"},
@@ -337,6 +336,27 @@ def update_output(value):
     fig_rain.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)",})
     return fig_rain
 
+@app.callback(Output('rain_icon_now', 'children'),
+            Input("interval", "n_intervals"))
+def update_time(n):
+    value = random.randrange(0, 100)
+    if (value >= 30):
+        message = "https://drive.google.com/uc?export=download&id=1pwdA5z_KBXQWRbrH1_9mvh5bdDkA0cKx"
+    elif (value <= 29):
+        message = "https://drive.google.com/uc?export=download&id=1ZHq8EqZkOClN89rgbVobBjVonsTLXHsf"
+
+    return html.Img(src=message, style={"width": 100, "height": 100})
+
+@app.callback(Output('rain_icon_next', 'children'),
+            Input("interval", "n_intervals"))
+def update_time(n):
+    value = random.randrange(0, 100)
+    if (value >= 30):
+        message = "https://drive.google.com/uc?export=download&id=1pwdA5z_KBXQWRbrH1_9mvh5bdDkA0cKx"
+    elif (value <= 29):
+        message = "https://drive.google.com/uc?export=download&id=1ZHq8EqZkOClN89rgbVobBjVonsTLXHsf"
+
+    return html.Img(src=message, style={"width": 100, "height": 100})
 
 @app.callback(Output('live-graph', 'figure'),
               [Input('temperature_graph', 'n_clicks'), 
