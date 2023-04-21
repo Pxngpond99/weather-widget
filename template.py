@@ -68,9 +68,9 @@ item = {
 }
 
 items = {
-    "grid-template-columns":"auto auto auto auto auto",
+    "grid-template-columns":"auto auto",
     "height":"20vh",
-    "width":"90vw",
+    "width":"80vw",
     "padding":"5vh 5vw 0 5vw",
     "display":"grid",
     "column-gap":"5vw",
@@ -259,9 +259,9 @@ def update_output(value):
              'bar': {'color': "#7CFC00", "line" : {"width":0}} ,
              'bgcolor': "white",
              'steps' : [
-                 {'range': [0, 20], 'color': "#4682B4"},
-                 {'range': [20, 35], 'color': "#87CEFA"},
-                 {'range': [35, 60], 'color': "#FF7F50"}],
+                 {'range': [0, 20], 'color': "#F0FFFF"},
+                 {'range': [20, 40], 'color': "#87CEFA"},
+                 {'range': [40, 60], 'color': "#FFA07A"}],
              'threshold' : {'line': {'color': "rgba(0,0,0,0)", 'width': 4}, 'thickness': 0.75, 'value': 60}},
     ))
     fig_temp.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)"})
