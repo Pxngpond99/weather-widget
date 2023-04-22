@@ -28,7 +28,6 @@ df_light = value_light_graph()
 
 
 model = load_model("ada_model")
-print(model)
 # style
 
 head_style = {
@@ -128,7 +127,7 @@ graph_button = {
 }
 
 graph = {
-    "padding":"5em 3em 3em 3em",
+    "padding":"28em 3em 3em 3em",
 }
 
 app.layout = html.Div(
@@ -164,11 +163,16 @@ app.layout = html.Div(
                 html.Div([
                     html.Div([
                         html.Div(id="time-next-1"),
-                        html.Div(id="rain_icon_next-1"),
                         dcc.Input(id='input_tem_1', value='', type='text'),
                         dcc.Input(id='input_hum_1', value='', type='text'),
                         dcc.Input(id='input_light_1', value='', type='text'),
-                        html.Div("Raindrop (%)")
+                        html.Div(id="rain_icon_next-1"),
+                        dbc.Button([
+                                    html.Div(className="fa-solid fa-droplet fa-bounce",
+                                                style=icon_button),
+                                    "SubMit"],
+                                    id="submit",
+                                    n_clicks=0),
                     ],style=prediction_item),
                     html.Div([
                         html.Div(id="time-next-2"),
@@ -176,7 +180,6 @@ app.layout = html.Div(
                         dcc.Input(id='input_tem_2', value='', type='text'),
                         dcc.Input(id='input_hum_2', value='', type='text'),
                         dcc.Input(id='input_light_2', value='', type='text'),
-                        html.Div("Raindrop (%)")
                     ],style=prediction_item)
                 ],style=item_template),
             style=item_center)
@@ -335,7 +338,7 @@ def update_output(value):
 
 @app.callback(
     Output('gauge-rain', 'figure'),
-    Input("interval", "n_intervals")
+    Input("clock", "n_intervals")
 )
 def update_output(value):
     fig_rain = go.Figure(go.Indicator(
@@ -371,32 +374,47 @@ def update_time(n):
     return current_time
 
 @app.callback(Output('rain_icon_next-1', 'children'),
-            Input("interval", "n_intervals"))
-def update_time(n):
+            [Input('input_tem_1', 'value'),
+            Input('input_hum_1', 'value'),
+            Input('input_light_1', 'value'),
+            Input("submit","n_clicks")]
+)
+def update_time(input1_value, input2_value, input3_value,n_click):
+    ctx = dash.callback_context
     tz = pytz.timezone('Asia/Singapore')
     current_time = datetime.now(tz).strftime("%H")
-    value = random.randrange(0, 100)
-    if (value < 20):
+    score = 0
+    if "submit" == ctx.triggered_id:
+        data = pd.DataFrame({'Temp9am': int(input1_value),
+                            'Humidity9am': int(input2_value),
+                            'Sunshine': int(input3_value)}, index=[1])
+        value = predict_model(model, data)
+        label = value["prediction_label"].item()
+        score = value["prediction_score"].item() * 100
+        if label == "No":
+            score = 100 - score
+        print(score)
+    if (score < 20):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/sun.png"
         else :
             message = "static/icon/moon.png"
-    elif (value < 40):
+    elif (score < 40):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/day_cloudy.png"
         else :
             message = "static/icon/night_cloudy.png"
-    elif (value < 60):
+    elif (score < 60):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/day_rain.png"
         else :
             message = "static/icon/night_rain.png"
-    elif (value < 80):
+    elif (score < 80):
         message = "static/icon/rainy.png"
-    elif (value <= 100):
+    elif (score <= 100):
         message = "static/icon/storm.png"
 
-    return html.Img(src=message, style={"width": "15vw", "height": "auto"})
+    return html.Div([html.Img(src=message, style={"width": "15vw", "height": "auto"}), html.H4(f"Raindrop {score} %",style={"padding":"2em 0 0 0"})])
 
 @app.callback(Output('rain_icon_next-2', 'children'),
             Input("interval", "n_intervals"))
@@ -424,7 +442,7 @@ def update_time(n):
     elif (value <= 100):
         message = "static/icon/storm.png"
 
-    return html.Img(src=message, style={"width": "15vw", "height": "auto"})
+    return html.Div([html.Img(src=message, style={"width": "15vw", "height": "auto"})])
 
 @app.callback(Output('live-graph', 'figure'),
               [Input('temperature_graph', 'n_clicks'), 
