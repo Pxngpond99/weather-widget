@@ -12,8 +12,10 @@ from data import value_humidity
 from data import value_light
 from data import value_raindrop
 
+from data_graph import value_tem_graph
+
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
-df = px.data.gapminder()
+df_tem = value_tem_graph()
 # style
 
 dashboard_template = {
@@ -372,18 +374,16 @@ def update_graph(button1_clicks, button2_clicks, button3_clicks):
         print(ctx.triggered)
 
     if graph_id == 'temperature_graph':
-        fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop",
-                         color="continent", log_x=True, hover_name="country",
-                         size_max=60)
+        # fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop",
+        #                  color="continent", log_x=True, hover_name="country",
+        #                  size_max=60)
+        fig = px.pie(df_tem, names="time", values="value")
         
     elif graph_id == 'humidity_graph':
-        fig = px.scatter(df, x="gdpPercap", y="lifeExp",
-                        color="continent", log_x=True, hover_name="country",
-                        size_max=60)
+        fig = px.bar(df_tem, x="time", y="value", color="time")
+
     else:
-        fig = px.scatter(df, x="lifeExp", y="gdpPercap", size="pop",
-                         color="continent", log_y=True, hover_name="country",
-                         size_max=60)
+        fig = px.scatter(df_tem, x="time", y="value", color="time")
         
     return fig
 

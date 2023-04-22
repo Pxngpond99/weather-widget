@@ -16,7 +16,7 @@ query_str = f'''from(bucket: "{bucket_name}")
   |> range(start: -20m)
   |> filter(fn: (r) => r["_measurement"] == "environment")
   |> filter(fn: (r) => r["_field"] == "humidity" or r["_field"] == "light" or r["_field"] == "raindrop" or r["_field"] == "temperature")
-  |> aggregateWindow(every: 1m, fn: mean, createEmpty: true)
+  |> aggregateWindow(every: 20m, fn: mean, createEmpty: true)
   |> yield(name: "mean")
   '''
 
@@ -34,6 +34,7 @@ def value_temperature():
     result_tem = values_tem.sum(numeric_only=True)
     count_tem = values_tem["value"].count()
 
+    print("temperature",result_tem["value"] / count_tem)
     return result_tem["value"] / count_tem
 
 def value_humidity():
@@ -47,6 +48,7 @@ def value_humidity():
     result_hum = values_hum.sum(numeric_only=True)
     count_hum = values_hum["value"].count()
 
+    print("humididt:",result_hum["value"] / count_hum)
     return result_hum["value"] / count_hum
 
 def value_light():
@@ -60,6 +62,7 @@ def value_light():
     result_light = values_light.sum(numeric_only=True)
     count_light = values_light["value"].count()
     
+    print("light:",result_light["value"] / count_light)
     return result_light["value"] / count_light
 
 def value_raindrop():
@@ -73,4 +76,10 @@ def value_raindrop():
     result_rain = values_rain.sum(numeric_only=True)
     count_rain = values_rain["value"].count()
     
+    print("raindrop:",result_rain["value"] / count_rain)
     return result_rain["value"] / count_rain
+
+value_temperature()
+value_humidity()
+value_light()
+value_raindrop()
