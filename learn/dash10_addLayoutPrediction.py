@@ -233,23 +233,33 @@ def update_output(value):
     fig_rain.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)",})
     return fig_rain
 
-# @app.callback(Output("time-next-1", "children"), 
-#             Input("clock", "n_intervals"))
-# def update_time(n):
-#     tz = pytz.timezone('Asia/Singapore')
-#     current_time = datetime.now(tz).strftime("%I:00 %p")
-#     return current_time
-
 # @app.callback(Output('rain_icon_next-1', 'children'),
 #             Input("interval", "n_intervals"))
 # def update_time(n):
+#     tz = pytz.timezone('___________________')
+#     current_time = datetime.now(tz).strftime("%H")
 #     value = random.randrange(0, 100)
-#     if (value >= 30):
-#         message = "https://drive.google.com/uc?export=download&id=1pwdA5z_KBXQWRbrH1_9mvh5bdDkA0cKx"
-#     elif (value <= 29):
-#         message = "https://drive.google.com/uc?export=download&id=1ZHq8EqZkOClN89rgbVobBjVonsTLXHsf"
+#     if (value < 20):
+#         if int(current_time) >= 6 and int(current_time) <= 18:
+#             message = "static/icon/sun.png"
+#         else :
+#             message = "___________________"
+#     elif (value < 40):
+#         if int(current_time) >= 6 and int(current_time) <= 18:
+#             message = "___________________"
+#         else :
+#             message = "___________________"
+#     elif (value < 60):
+#         if int(current_time) >= 6 and int(current_time) <= 18:
+#             message = "___________________"
+#         else :
+#             message = "___________________"
+#     elif (value < 80):
+#         message = "___________________"
+#     elif (value <= 100):
+#         message = "___________________"
 
-#     return html.Img(src=message, style={"width": 100, "height": 100})
+#     return html.Img(src=message, style={"width": "15vw", "height": "auto"})
 
 if __name__ == "__main__":
     app.run_server(debug=True)
