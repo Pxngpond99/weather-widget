@@ -3,6 +3,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 import json
 import pandas as pd
 import numpy as np
+from datetime import datetime, timedelta
 
 bucket_name = "itscoe-bucket"
 
@@ -26,16 +27,17 @@ results = []
 def value_temperature_graph():
     for table in tables:
         for record in table.records:
-            results.append((record.get_time(), record.get_field(), record.get_value()))
+            results.append((record.get_time() + timedelta(hours=7), record.get_field(), record.get_value()))
 
     df = pd.DataFrame(results, columns=["time", "field", "value"])
     df = df[df["field"] == "temperature"]
+    print(df)
     return df
 
 def value_humidity_graph():
     for table in tables:
         for record in table.records:
-            results.append((record.get_time(), record.get_field(), record.get_value()))
+            results.append((record.get_time() + timedelta(hours=7), record.get_field(), record.get_value()))
 
     df = pd.DataFrame(results, columns=["time", "field", "value"])
     df = df[df["field"] == "humidity"]
@@ -44,7 +46,7 @@ def value_humidity_graph():
 def value_light_graph():
     for table in tables:
         for record in table.records:
-            results.append((record.get_time(), record.get_field(), record.get_value()))
+            results.append((record.get_time() + timedelta(hours=7), record.get_field(), record.get_value()))
 
     df = pd.DataFrame(results, columns=["time", "field", "value"])
     df = df[df["field"] == "light"]

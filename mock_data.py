@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import random
 import json
@@ -29,13 +29,16 @@ while True:
     msg = "hello"
     temperature = round(random.uniform(25.0, 29.0), 2)
     humidity = round(random.uniform(58.0, 70.0), 2)
-    light = round(random.uniform(0.0, 100.0), 2)
-    raindrop = round(random.uniform(0.0, 100.0), 2)
+    light = round(random.uniform(90.0, 100.0), 2)
+    raindrop = round(random.uniform(30.0, 50.0), 2)
+    hours = random.randint(0, 28)
     # data = {"temperature": temperature, "humidity": humidity, "light": light, "raindrop": raindrop}
     data["temperature"] = temperature
     data["humidity"] = humidity
     data["light"] = light
     data["raindrop"] = raindrop
+    #data["timestamp"] = datetime.now().timestamp() - timedelta(hours=hours).total_seconds()
+    data["timestamp"] = str(datetime.utcnow() - timedelta(hours=hours))
     data_json = json.dumps(data)
     #print("[" + str(datetime.now()) + "]", "Data:", data_json)
     info = mqttClient.publish(
