@@ -12,20 +12,27 @@ from data import value_humidity
 from data import value_light
 from data import value_raindrop
 
+from data_graph import value_temperature_graph
+from data_graph import value_humidity_graph
+from data_graph import value_light_graph
+
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
-df = px.data.gapminder()
+df_tem = value_temperature_graph()
+df_hum = value_humidity_graph()
+df_light = value_light_graph()
+
 # style
 
-dashboard_template = {
-    "textAlign":"center",
-    "padding":"1em 0 1em 0"
-}
-
-dashboard_name = {
+head_style = {
     "font-size":"3em",
     "font-weight":"bold",
     "color":"rgba(255, 255, 255, 1)",
     "text-shadow": "2px 2px #000000",
+}
+
+head_template = {
+    "textAlign":"center",
+    "padding":"2em"
 }
 
 date_and_time = {
@@ -33,21 +40,21 @@ date_and_time = {
     "margin-top":"2em",
 }
 
-time_template = {
+time_style = {
     "font-size":"3em",
     "font-weight":"bold",
     "color":"rgba(255, 255, 255, 1)",
     "text-shadow": "2px 2px #000000"
 }
 
-date_template = {
+date_style = {
     "font-size":"1.5em",
     "font-weight":"bold",
     "color":"rgba(255, 255, 255,1)",
     "text-shadow": "2px 2px #000000"
 }
 
-gauge = {
+gauge_style = {
     "background-color":"rgba(179, 218, 255,.5)",
     "border-radius":"25px",
     "textAlign":"center",
@@ -58,34 +65,32 @@ gauge = {
     "text-shadow":"2px 2px 2px #000000",
 }
 
-item = {
+prediction_item = {
     "background-color":"rgba(179, 218, 255,.5)",
     "grid-template-columns":"auto",
     "display":"grid",
     "row-gap":"2.7vw",
-    "padding":"0 0 3vh 0",
+    "padding":"5vh 0 3vh 0",
     "border-radius":"25px",
     "textAlign":"center",
     "color":"rgba(255, 255, 255,1)",
     'text-shadow': '2px 1px #000000',
-    "font-size":"17px"
+    "font-size":"2em",
+    "font-weight":"bold",
 }
 
-items = {
+item_template = {
     "grid-template-columns":"auto auto",
     "height":"70vh",
     "width":"70vw",
-    "padding":"10vh 5vw 0 5vw",
+    "padding":"8vh 5vw 0 5vw",
     "display":"grid",
-    "column-gap":"5vw",
+    "column-gap":"8vw",
 }
 
-graph = {
-    "margin-top":"28em",
-    "padding":"1em 3em 3em 3em",
-}
-
-change_graph = {
+item_center = {
+    "display":"flex",
+    "justify-content": "center"
 }
 
 change_graph_template = {
@@ -95,6 +100,11 @@ change_graph_template = {
     "margin-bottom":"1em"
 }
 
+icon_button = {
+    "margin":"0.2em", 
+    "font-size":"1.5rem"
+}
+    
 graph_button = {
     "background-image": "linear-gradient(to bottom, #B7E3FF, #08A2BD)",
     "color": "white",
@@ -109,28 +119,32 @@ graph_button = {
     "textAlign":"center",
 }
 
+graph = {
+    "padding":"5em 3em 3em 3em",
+}
+
 app.layout = html.Div(
     children=[
         html.Div([
-            html.H2("Weather Dashboard",style=dashboard_name)
-        ], style=dashboard_template),
+            html.H2("Weather Dashboard",style=head_style)
+        ], style=head_template),
 
         html.Div([
             dbc.Row([
                 dbc.Col([
                     html.Div([
-                        html.Div(id="time",style=time_template),
-                        html.Div(id="date",style=date_template),
+                        html.Div(id="time",style=time_style),
+                        html.Div(id="date",style=date_style),
                         dcc.Interval(id="clock", interval=1000),
                     ],style=date_and_time)
                 ],md=3),
 
                 dbc.Col([
                     html.Div([
-                        dcc.Graph(id="gauge-temp",style=gauge),
-                        dcc.Graph(id="gauge-humidity",style=gauge),
-                        dcc.Graph(id="gauge-light",style=gauge),
-                        dcc.Graph(id="gauge-rain",style=gauge),
+                        dcc.Graph(id="gauge-temp",style=gauge_style),
+                        dcc.Graph(id="gauge-humidity",style=gauge_style),
+                        dcc.Graph(id="gauge-light",style=gauge_style),
+                        dcc.Graph(id="gauge-rain",style=gauge_style),
                         dcc.Interval(id="interval", interval=30 * 1000, n_intervals=0),
                     ])
                 ],md=9)
@@ -141,17 +155,17 @@ app.layout = html.Div(
             dbc.Row(
                 html.Div([
                     html.Div([
-                        html.Div(id="time-now"),
-                        html.Div(id="rain_icon_now"),
-                        html.Div("rain")
-                    ],style=item),
-                    html.Div([
                         html.Div(id="time-next-1"),
-                        html.Div(id="rain_icon_next"),
-                        html.Div("rain")
-                    ],style=item)
-                ],style=items),
-            style={"display":"flex", "justify-content": "center"})
+                        html.Div(id="rain_icon_next-1"),
+                        html.Div("Raindrop (%)")
+                    ],style=prediction_item),
+                    html.Div([
+                        html.Div(id="time-next-2"),
+                        html.Div(id="rain_icon_next-2"),
+                        html.Div("Raindrop (%)")
+                    ],style=prediction_item)
+                ],style=item_template),
+            style=item_center)
         ]),
 
         html.Div([
@@ -160,36 +174,33 @@ app.layout = html.Div(
                     [
                         html.Div([
                             html.Div(
-                                dbc.Button(
-                                    [
-                                        html.Div(className="fa-solid fa-temperature-quarter fa-bounce",style={"margin":"0.2em", "font-size":"1.5rem"}),
-                                        "Temperature"
-                                    ],
+                                dbc.Button([
+                                    html.Div(className="fa-solid fa-temperature-quarter fa-bounce",
+                                                style=icon_button),
+                                    "Temperature"],
                                     id="temperature_graph",
                                     n_clicks=0,
                                     style=graph_button),
-                            style=change_graph),
+                            ),
                             html.Div(
-                                dbc.Button(
-                                    [
-                                        html.Div(className="fa-solid fa-droplet fa-bounce",style={"margin":"0.2em", "font-size":"1.5rem"}),
-                                        "Humidity",
-                                    ],
+                                dbc.Button([
+                                    html.Div(className="fa-solid fa-droplet fa-bounce",
+                                                style=icon_button),
+                                    "Humidity"],
                                     id="humidity_graph",
                                     n_clicks=0,
                                     style=graph_button),
-                            style=change_graph),
+                            ),
                             html.Div(
-                                dbc.Button(
-                                    [
-                                        html.Div(className="fa-solid fa-sun fa-bounce",style={"margin":"0.2em", "font-size":"1.5rem"}),
-                                        "Light"
-                                    ],
+                                dbc.Button([
+                                    html.Div(className="fa-solid fa-sun fa-bounce",
+                                                style=icon_button),
+                                    "Light"],             
                                     id="light_graph",
                                     n_clicks=0,
-                                    style=graph_button),
-                            style=change_graph)
-                        ],style=change_graph_template),
+                                    style=graph_button)
+                            )
+                        ],style=change_graph_template),  
                         
                         html.Div([
                             dcc.Graph(id='live-graph')
@@ -225,13 +236,13 @@ def update_time(n):
     tz = pytz.timezone('Asia/Bangkok')
     hour = int(datetime.now(tz).strftime("%H"))
     if (hour >= 8 and hour <= 16) :
-        message = "url('static/day.jpg')"
+        message = "url('static/background/day.jpg')"
     elif (hour >= 6 and hour <= 8) :
-        message = "url('static/mornin.jpg')"
+        message = "url('static/background/mornin.jpg')"
     elif (hour >= 16 and hour <= 18) :
-        message = "url('static/morning.jpg')"
+        message = "url('static/background/morning.jpg')"
     else :
-        message = "url('static/night.jpg')"
+        message = "url('static/background/night.jpg')"
     return {
             "background-image": message,
             "background-size":"cover",
@@ -330,27 +341,61 @@ def update_output(value):
     fig_rain.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)",})
     return fig_rain
 
-@app.callback(Output('rain_icon_now', 'children'),
+@app.callback(Output('rain_icon_next-1', 'children'),
             Input("interval", "n_intervals"))
 def update_time(n):
+    tz = pytz.timezone('Asia/Singapore')
+    current_time = datetime.now(tz).strftime("%H")
     value = random.randrange(0, 100)
-    if (value >= 30):
-        message = "static/cloudy.png"
-    elif (value <= 29):
-        message = "static/cloudy.png"
+    if (value < 20):
+        if int(current_time) >= 6 and int(current_time) <= 18:
+            message = "static/icon/sun.png"
+        else :
+            message = "static/icon/moon.png"
+    elif (value < 40):
+        if int(current_time) >= 6 and int(current_time) <= 18:
+            message = "static/icon/day_cloudy.png"
+        else :
+            message = "static/icon/night_cloudy.png"
+    elif (value < 60):
+        if int(current_time) >= 6 and int(current_time) <= 18:
+            message = "static/icon/day_rain.png"
+        else :
+            message = "static/icon/night_rain.png"
+    elif (value < 80):
+        message = "static/icon/rainy.png"
+    elif (value <= 100):
+        message = "static/icon/storm.png"
 
-    return html.Img(src=message, style={"width": "20vw", "height": "auto"})
+    return html.Img(src=message, style={"width": "15vw", "height": "auto"})
 
-@app.callback(Output('rain_icon_next', 'children'),
+@app.callback(Output('rain_icon_next-2', 'children'),
             Input("interval", "n_intervals"))
 def update_time(n):
+    tz = pytz.timezone('Asia/Tokyo')
+    current_time = datetime.now(tz).strftime("%H")
     value = random.randrange(0, 100)
-    if (value >= 30):
-        message = "https://drive.google.com/uc?export=download&id=1pwdA5z_KBXQWRbrH1_9mvh5bdDkA0cKx"
-    elif (value <= 29):
-        message = "https://drive.google.com/uc?export=download&id=1ZHq8EqZkOClN89rgbVobBjVonsTLXHsf"
+    if (value < 20):
+        if int(current_time) >= 6 and int(current_time) <= 18:
+            message = "static/icon/sun.png"
+        else :
+            message = "static/icon/moon.png"
+    elif (value < 40):
+        if int(current_time) >= 6 and int(current_time) <= 18:
+            message = "static/icon/day_cloudy.png"
+        else :
+            message = "static/icon/night_cloudy.png"
+    elif (value < 60):
+        if int(current_time) >= 6 and int(current_time) <= 18:
+            message = "static/icon/day_rain.png"
+        else :
+            message = "static/icon/night_rain.png"
+    elif (value < 80):
+        message = "static/icon/rainy.png"
+    elif (value <= 100):
+        message = "static/icon/storm.png"
 
-    return html.Img(src=message, style={"width": "20vw", "height": "auto"})
+    return html.Img(src=message, style={"width": "15vw", "height": "auto"})
 
 @app.callback(Output('live-graph', 'figure'),
               [Input('temperature_graph', 'n_clicks'), 
@@ -366,18 +411,16 @@ def update_graph(button1_clicks, button2_clicks, button3_clicks):
         print(ctx.triggered)
 
     if graph_id == 'temperature_graph':
-        fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop",
-                         color="continent", log_x=True, hover_name="country",
-                         size_max=60)
+        # fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop",
+        #                  color="continent", log_x=True, hover_name="country",
+        #                  size_max=60)
+        fig = px.bar(df_tem, x="time", y="value", color="time")
         
     elif graph_id == 'humidity_graph':
-        fig = px.scatter(df, x="gdpPercap", y="lifeExp",
-                        color="continent", log_x=True, hover_name="country",
-                        size_max=60)
+        fig = px.bar(df_hum, x="time", y="value", color="time")
+
     else:
-        fig = px.scatter(df, x="lifeExp", y="gdpPercap", size="pop",
-                         color="continent", log_y=True, hover_name="country",
-                         size_max=60)
+        fig = px.scatter(df_light, x="time", y="value", color="time")
         
     return fig
 
