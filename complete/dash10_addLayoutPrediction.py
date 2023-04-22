@@ -113,21 +113,21 @@ app.layout = html.Div(
                         ]),
                     ]),
                     html.Div([
-            dbc.Row(
-                html.Div([
-                    html.Div([
-                        html.Div(id="time-next-1"),
-                        html.Div(id="rain_icon_next-1"),
-                        html.Div("Raindrop (%)")
-                    ],style=prediction_item),
-                    html.Div([
-                        html.Div(id="time-next-2"),
-                        html.Div(id="rain_icon_next-2"),
-                        html.Div("Raindrop (%)")
-                    ],style=prediction_item)
-                ],style=item_template),
-            style=item_center)
-        ]),
+                        dbc.Row(
+                            html.Div([
+                                html.Div([
+                                    html.Div(id="time-next-1"),
+                                    html.Div(id="rain_icon_next-1"),
+                                    html.Div("Raindrop (%)")
+                                ],style=prediction_item),
+                                html.Div([
+                                    html.Div(id="time-next-2"),
+                                    html.Div(id="rain_icon_next-2"),
+                                    html.Div("Raindrop (%)")
+                                ],style=prediction_item)
+                            ],style=item_template),
+                        style=item_center)
+                    ]),
                 ],style=background_style)
 
 @app.callback(Output("time", "children"), 

@@ -272,7 +272,7 @@ def update_time(n):
 def update_output(value):
     fig_temp = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value_temperature(),
+    value = random.randrange(0, 60),
     mode = "gauge+number+delta",
     title = {'text': "Temperature (°C)"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
@@ -318,7 +318,7 @@ def update_output(value):
 def update_output(value):
     fig_light = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value_light(),
+    value = random.randrange(0, 100),
     mode = "gauge+number+delta",
     title = {'text': "Light (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
@@ -340,7 +340,7 @@ def update_output(value):
 def update_output(value):
     fig_rain = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value_raindrop(),
+    value = random.randrange(0, 100),
     mode = "gauge+number+delta",
     title = {'text': "Raindrop (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},

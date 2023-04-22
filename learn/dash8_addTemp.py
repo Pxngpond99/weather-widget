@@ -47,7 +47,7 @@ date_style = {
 }
 
 # ________ = {
-#     "background-color":"rgba(___, ___, ___, ___)",
+#     "background-color":"rgba(179, 218, 255,.5)",
 #     "border-radius":"25px",
 #     "textAlign":"center",
 #     "display":"inline-block",
@@ -75,7 +75,7 @@ app.layout = html.Div(
 
                             dbc.Col([
                                 html.Div([
-                                    # dcc.Graph(id="________"),
+                                    # dcc.Graph(id="________",style=gauge_style),
                                     # dcc.Interval(id="_________", interval=______, n_intervals=0),
                                 ]),
                             ],md=9),
@@ -98,8 +98,8 @@ def update_time(n):
     return current_date
 
 # @app.callback(
-#     Output('_______', 'figure'),
-#     Input("_______", "n_intervals")
+#     Output('gauge-temp', 'figure'),
+#     Input("interval", "n_intervals")
 # )
 # def update_output(value):
 #     value = random.randrange(0, 60)

@@ -4,9 +4,14 @@ from datetime import datetime
 import pytz 
 import plotly.graph_objects as go
 import random
+import plotly.express as px
+import dash
+import pandas as pd
 
 app = Dash(__name__, 
            external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
+
+df = px.data.gapminder()
 
 background_style = {
             "background-color": "rgba(100, 149, 237, 1)",
@@ -85,11 +90,30 @@ item_center = {
     "justify-content": "center"
 }
 
-# change_graph_template = {
-#     "display": "flex",
-#     "flex-wrap":"wrap",
-#     "justify-content": "space-around",
-#     "margin-bottom":"1em"
+change_graph_template = {
+    "display": "flex",
+    "flex-wrap":"wrap",
+    "justify-content": "space-around",
+    "margin-bottom":"1em"
+}
+
+# icon_button = {
+#     "margin":"0.2em", 
+#     "font-size":"1.5rem"
+# }
+    
+# graph_button = {
+#     "background-image": "linear-gradient(to bottom, #B7E3FF, #08A2BD)",
+#     "color": "white",
+#     "border-radius": "20px",
+#     "border": "1px solid #08A2BD",
+#     "padding": "12px 24px",
+#     "font-size": "1.2rem",
+#     "font-weight": "600",
+#     "box-shadow": "0px 4px 4px rgba(0, 0, 0, 0.25)",
+#     "transition": "all 0.3s ease",
+#     "justify-content": "center",
+#     "textAlign":"center",
 # }
 
 app.layout = html.Div(
@@ -135,21 +159,44 @@ app.layout = html.Div(
                                 ],style=item_template),
                             style=item_center)
                         ]),
+                    html.Div([
+                        dbc.Row(
+                            dbc.CardBody([
+                                html.Div([
+                                    # html.Div(
+                                    #     dbc.Button([
+                                    #         html.Div(className="fa-solid fa-temperature-quarter fa-bounce",
+                                    #                  style=icon_button),
+                                    #         "Temperature"],
+                                    #         id="temperature_graph",
+                                    #         n_clicks=0,
+                                    #         style=graph_button),
+                                    #     ),
+                                    # html.Div(
+                                    #     dbc.Button([
+                                    #         html.Div(className="fa-solid fa-droplet fa-bounce",
+                                    #                  style=_____),
+                                    #         "Humidity",],
+                                    #         id="humidity_graph",
+                                    #         n_clicks=0,
+                                    #         style=_______),
+                                    #     ),
+                                    # html.Div(
+                                    #     dbc.Button([
+                                    #         html.Div(className="fa-solid fa-sun fa-bounce",
+                                    #                  style=_____),
+                                    #         "Light"],             
+                                    #         id="light_graph",
+                                    #         n_clicks=0,
+                                    #         style=_______),)
+                                    ],style=change_graph_template),                    
                             html.Div([
-                                dbc.Row(
-                                    dbc.CardBody([
-                                        # html.Div([
-                                        #     html.Div(
-                                        #         dbc.Button(["Temperature"],
-                                        #                 id="temperature_graph",
-                                        #                 n_clicks=0,),
-                                        #         ),
-                                        #
-                                        #     ],style=______),
-                                    ]), 
-                                )
-                            ])
-                ],style=background_style)
+                                dcc.Graph(id='live-graph')
+                            ]),
+                        ]), 
+                    )
+                ])    
+            ],style=background_style)
 
 @app.callback(Output("time", "children"), 
             Input("clock", "n_intervals"))
@@ -328,6 +375,34 @@ def update_time(n):
         message = "static/icon/storm.png"
 
     return html.Img(src=message, style={"width": "15vw", "height": "auto"})
+
+@app.callback(Output('live-graph', 'figure'),
+              [Input('temperature_graph', 'n_clicks'), 
+               Input('humidity_graph', 'n_clicks'),
+               Input('light_graph', 'n_clicks')])
+def update_graph(button1_clicks, button2_clicks, button3_clicks):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        graph_id = 'temperature_graph'
+    else:
+        graph_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        print(ctx.triggered)
+
+    if graph_id == 'temperature_graph':
+        fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop",
+                         color="continent", log_x=True, hover_name="country",
+                         size_max=60)
+        
+    elif graph_id == 'humidity_graph':
+        fig = px.scatter(df, x="gdpPercap", y="lifeExp",
+                        color="continent", log_x=True, hover_name="country",
+                        size_max=60)
+    else:
+        fig = px.scatter(df, x="lifeExp", y="gdpPercap", size="pop",
+                         color="continent", log_y=True, hover_name="country",
+                         size_max=60)
+
+    return fig
 
 if __name__ == "__main__":
     app.run_server(debug=True)

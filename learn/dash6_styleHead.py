@@ -16,7 +16,7 @@ background_style = {
 # head_style = {
 #     "font-size":"3em",
 #     "font-weight":"bold",
-#     "color":"rgba(___, ___, ___, 1)",
+#     "color":"rgba(255, 255, 255, 1)",
 #     "text-shadow": "2px 2px #000000",
 # }
 
