@@ -73,9 +73,9 @@ item = {
 
 items = {
     "grid-template-columns":"auto auto",
-    "height":"20vh",
+    "height":"70vh",
     "width":"70vw",
-    "padding":"5vh 5vw 0 5vw",
+    "padding":"10vh 5vw 0 5vw",
     "display":"grid",
     "column-gap":"5vw",
 }
@@ -143,17 +143,11 @@ app.layout = html.Div(
                     html.Div([
                         html.Div(id="time-now"),
                         html.Div(id="rain_icon_now"),
-                        html.Div("light"),
-                        html.Div("temperature"),
-                        html.Div("humidity"),
                         html.Div("rain")
                     ],style=item),
                     html.Div([
                         html.Div(id="time-next-1"),
                         html.Div(id="rain_icon_next"),
-                        html.Div("light"),
-                        html.Div("temperature"),
-                        html.Div("humidity"),
                         html.Div("rain")
                     ],style=item)
                 ],style=items),
@@ -253,7 +247,7 @@ def update_time(n):
 def update_output(value):
     fig_temp = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value_temperature(),
+    value = random.randrange(0, 60),
     mode = "gauge+number+delta",
     title = {'text': "Temperature (°C)"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
@@ -299,7 +293,7 @@ def update_output(value):
 def update_output(value):
     fig_light = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value_light(),
+    value = random.randrange(0, 100),
     mode = "gauge+number+delta",
     title = {'text': "Light (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
@@ -321,7 +315,7 @@ def update_output(value):
 def update_output(value):
     fig_rain = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value_raindrop(),
+    value = random.randrange(0, 100),
     mode = "gauge+number+delta",
     title = {'text': "Raindrop (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
@@ -341,11 +335,11 @@ def update_output(value):
 def update_time(n):
     value = random.randrange(0, 100)
     if (value >= 30):
-        message = "https://drive.google.com/uc?export=download&id=1pwdA5z_KBXQWRbrH1_9mvh5bdDkA0cKx"
+        message = "static/cloudy.png"
     elif (value <= 29):
-        message = "https://drive.google.com/uc?export=download&id=1ZHq8EqZkOClN89rgbVobBjVonsTLXHsf"
+        message = "static/cloudy.png"
 
-    return html.Img(src=message, style={"width": 100, "height": 100})
+    return html.Img(src=message, style={"width": "20vw", "height": "auto"})
 
 @app.callback(Output('rain_icon_next', 'children'),
             Input("interval", "n_intervals"))
@@ -356,7 +350,7 @@ def update_time(n):
     elif (value <= 29):
         message = "https://drive.google.com/uc?export=download&id=1ZHq8EqZkOClN89rgbVobBjVonsTLXHsf"
 
-    return html.Img(src=message, style={"width": 100, "height": 100})
+    return html.Img(src=message, style={"width": "20vw", "height": "auto"})
 
 @app.callback(Output('live-graph', 'figure'),
               [Input('temperature_graph', 'n_clicks'), 
