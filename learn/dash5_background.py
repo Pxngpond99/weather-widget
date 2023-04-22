@@ -6,12 +6,13 @@ import pytz
 app = Dash(__name__, 
            external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
 
-background_style = {
-            # "background-color": "rgba(___, ___, ___, 1)",
-            "background-size":"cover",
-            "background-position":"center",
-            "background-attachment":"fixed",
-      }
+# background_style = {
+#             "background-color": "rgba(100, 149, 237, 1)",
+#             "background-size":"cover",
+#             "background-position":"center",
+#             "background-attachment":"fixed",
+#       }
+
 
 app.layout = html.Div(
                 children=[
@@ -23,7 +24,7 @@ app.layout = html.Div(
                         html.Div(id="date",),
                         dcc.Interval(id="clock", interval=1000),
                     ],),
-                ],style=background_style)
+                # ],style=background_style)
         
 @app.callback(Output("time", "children"), 
             Input("clock", "n_intervals"))

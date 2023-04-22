@@ -124,7 +124,7 @@ def update_output(value):
 
 # @app.callback(
 #     Output('_________', 'figure'),
-#     Input("_________", "n_intervals")
+#     Input("interval", "n_intervals")
 # )
 # def update_output(value):
 #     value = random.randrange(0, 100)
@@ -134,7 +134,7 @@ def update_output(value):
 #     mode = "gauge+number+delta",
 #     title = {'text': "__________"},
 #     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
-#     gauge = {'axis': {'range': [_____, ____], 'tickwidth': 1,'tickcolor': "rgba(___,___,___,1)","dtick":____},
+#    gauge = {'axis': {'range': [0, 100], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":10},
 #              'bar': {'color': "darkblue"},
 #              'bgcolor': "white",
 #              'steps' : [
@@ -143,7 +143,7 @@ def update_output(value):
 #                  {'range': [60, 100], 'color':" #87CEFA"},],
 #              'threshold' : {'line': {'color': "rgba(0,0,0,0)", 'width': 4}, 'thickness': 0.75, 'value': 100}},
 #     ))
-#     fig_humidity.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(___,___,___,1)"})
+#     fig_humidity.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255,255,255,1)"})
 #     return fig_humidity
 
 

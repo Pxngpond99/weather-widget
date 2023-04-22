@@ -97,12 +97,12 @@ change_graph_template = {
     "margin-bottom":"1em"
 }
 
-# _____ = {
+# icon_button = {
 #     "margin":"0.2em", 
 #     "font-size":"1.5rem"
 # }
     
-# _____ = {
+# graph_button = {
 #     "background-image": "linear-gradient(to bottom, #B7E3FF, #08A2BD)",
 #     "color": "white",
 #     "border-radius": "20px",
@@ -166,11 +166,11 @@ app.layout = html.Div(
                                     # html.Div(
                                     #     dbc.Button([
                                     #         html.Div(className="fa-solid fa-temperature-quarter fa-bounce",
-                                    #                  style=_____),
+                                    #                  style=icon_button),
                                     #         "Temperature"],
                                     #         id="temperature_graph",
                                     #         n_clicks=0,
-                                    #         style=_______),
+                                    #         style=graph_button),
                                     #     ),
                                     # html.Div(
                                     #     dbc.Button([

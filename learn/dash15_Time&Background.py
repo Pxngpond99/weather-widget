@@ -193,7 +193,7 @@ app.layout = html.Div(
                         ]),style=graph
                     ),
                 ])    
-           # ],id="________")
+            ],id="image-background")
 
 @app.callback(Output("time", "children"), 
             Input("clock", "n_intervals"))
@@ -401,19 +401,19 @@ def update_graph(button1_clicks, button2_clicks, button3_clicks):
 
     return fig
 
-# @app.callback(Output('________', 'style'),
+# @app.callback(Output('_________', 'style'),
 #             Input('clock', 'n_intervals'))
 # def update_time(n):
 #     tz = pytz.timezone('Asia/Bangkok')
 #     hour = int(datetime.now(tz).strftime("%H"))
 #     if (hour >= 8 and hour <= 16) :
 #         message = "url('static/background/day.jpg')"
-#     elif (______) :
-#         message = "url('________')"
-#     elif (______) :
-#         message = "url('________')"
-#     else :
-#         message = "url('________')"
+#     elif (hour >= 6 and hour <= 8) :
+#        message = "url('static/background/mornin.jpg')"
+#    elif (hour >= 16 and hour <= 18) :
+#        message = "url('static/background/morning.jpg')"
+#    else :
+#        message = "url('static/background/night.jpg')"
 #     return {
 #             "background-image": message,
 #             "background-size":"cover",

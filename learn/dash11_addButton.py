@@ -144,7 +144,7 @@ app.layout = html.Div(
                                         #                 id="temperature_graph",
                                         #                 n_clicks=0,),
                                         #         ),
-
+                                        #
                                         #     ],style=______),
                                     ]), 
                                 )
