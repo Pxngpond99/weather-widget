@@ -12,10 +12,15 @@ from data import value_humidity
 from data import value_light
 from data import value_raindrop
 
-from data_graph import value_tem_graph
+from data_graph import value_temperature_graph
+from data_graph import value_humidity_graph
+from data_graph import value_light_graph
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
-df_tem = value_tem_graph()
+df_tem = value_temperature_graph()
+df_hum = value_humidity_graph()
+df_light = value_light_graph()
+
 # style
 
 dashboard_template = {
@@ -233,13 +238,13 @@ def update_time(n):
     tz = pytz.timezone('Asia/Bangkok')
     hour = int(datetime.now(tz).strftime("%H"))
     if (hour >= 8 and hour <= 16) :
-        message = "url('static/day.jpg')"
+        message = "url('static/background/day.jpg')"
     elif (hour >= 6 and hour <= 8) :
-        message = "url('static/mornin.jpg')"
+        message = "url('static/background/mornin.jpg')"
     elif (hour >= 16 and hour <= 18) :
-        message = "url('static/morning.jpg')"
+        message = "url('static/background/morning.jpg')"
     else :
-        message = "url('static/night.jpg')"
+        message = "url('static/background/night.jpg')"
     return {
             "background-image": message,
             "background-size":"cover",
@@ -377,13 +382,13 @@ def update_graph(button1_clicks, button2_clicks, button3_clicks):
         # fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop",
         #                  color="continent", log_x=True, hover_name="country",
         #                  size_max=60)
-        fig = px.pie(df_tem, names="time", values="value")
+        fig = px.bar(df_tem, x="time", y="value", color="time")
         
     elif graph_id == 'humidity_graph':
-        fig = px.bar(df_tem, x="time", y="value", color="time")
+        fig = px.bar(df_hum, x="time", y="value", color="time")
 
     else:
-        fig = px.scatter(df_tem, x="time", y="value", color="time")
+        fig = px.scatter(df_light, x="time", y="value", color="time")
         
     return fig
 

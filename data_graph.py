@@ -23,21 +23,33 @@ query_str = f'''from(bucket: "{bucket_name}")
 tables = query_api.query(query_str)
 results = []
 
-def value_tem_graph():
+def value_temperature_graph():
     for table in tables:
         for record in table.records:
             results.append((record.get_time(), record.get_field(), record.get_value()))
 
     df = pd.DataFrame(results, columns=["time", "field", "value"])
     df = df[df["field"] == "temperature"]
-
-    result_tem = df.sum(numeric_only=True)
-    count_tem = df["value"].count()
-    result = result_tem["value"] / count_tem
-
-    re = df["value"].replace(np.nan, result)
-    print(re)
-    print(df)
     return df
 
-value_tem_graph()
+def value_humidity_graph():
+    for table in tables:
+        for record in table.records:
+            results.append((record.get_time(), record.get_field(), record.get_value()))
+
+    df = pd.DataFrame(results, columns=["time", "field", "value"])
+    df = df[df["field"] == "humidity"]
+    return df
+
+def value_light_graph():
+    for table in tables:
+        for record in table.records:
+            results.append((record.get_time(), record.get_field(), record.get_value()))
+
+    df = pd.DataFrame(results, columns=["time", "field", "value"])
+    df = df[df["field"] == "light"]
+    return df
+
+value_temperature_graph()
+value_humidity_graph()
+value_light_graph()
