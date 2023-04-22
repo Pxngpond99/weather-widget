@@ -2,11 +2,13 @@ from dash import Dash, dash, dcc, html ,Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
+import dash
 from datetime import datetime
 import pytz #time zone
 import plotly.graph_objects as go
 import random
-import dash
+from pycaret.classification import *
+
 from data import value_temperature
 from data import value_humidity
 from data import value_light
@@ -16,11 +18,17 @@ from data_graph import value_temperature_graph
 from data_graph import value_humidity_graph
 from data_graph import value_light_graph
 
+
+
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
+
 df_tem = value_temperature_graph()
 df_hum = value_humidity_graph()
 df_light = value_light_graph()
 
+
+model = load_model("ada_model")
+print(model)
 # style
 
 head_style = {
@@ -157,11 +165,17 @@ app.layout = html.Div(
                     html.Div([
                         html.Div(id="time-next-1"),
                         html.Div(id="rain_icon_next-1"),
+                        dcc.Input(id='input_tem_1', value='', type='text'),
+                        dcc.Input(id='input_hum_1', value='', type='text'),
+                        dcc.Input(id='input_light_1', value='', type='text'),
                         html.Div("Raindrop (%)")
                     ],style=prediction_item),
                     html.Div([
                         html.Div(id="time-next-2"),
                         html.Div(id="rain_icon_next-2"),
+                        dcc.Input(id='input_tem_2', value='', type='text'),
+                        dcc.Input(id='input_hum_2', value='', type='text'),
+                        dcc.Input(id='input_light_2', value='', type='text'),
                         html.Div("Raindrop (%)")
                     ],style=prediction_item)
                 ],style=item_template),
@@ -340,6 +354,21 @@ def update_output(value):
     ))
     fig_rain.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)",})
     return fig_rain
+
+
+@app.callback(Output("time-next-1", "children"), 
+            Input("clock", "n_intervals"))
+def update_time(n):
+    tz = pytz.timezone('Asia/Singapore')
+    current_time = datetime.now(tz).strftime("%I:00 %p")
+    return current_time
+
+@app.callback(Output("time-next-2", "children"), 
+            Input("clock", "n_intervals"))
+def update_time(n):
+    tz = pytz.timezone('Asia/Tokyo')
+    current_time = datetime.now(tz).strftime("%I:00 %p")
+    return current_time
 
 @app.callback(Output('rain_icon_next-1', 'children'),
             Input("interval", "n_intervals"))
