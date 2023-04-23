@@ -28,7 +28,6 @@ df_light = value_light_graph()
 
 
 model = load_model("ada_model")
-print(model)
 # style
 
 head_style = {
@@ -107,10 +106,10 @@ item_image = {
 }
 
 item_button = {
-    "background-image": "linear-gradient(to bottom, #B7E3FF, #08A2BD)",
+    "background-image": "linear-gradient(to bottom, #80EBD9, #08C8A8)",
     "color": "white",
     "border-radius": "20px",
-    "border": "1px solid #08A2BD",
+    "border": "1px solid #08C8A8",
     "padding": "12px 24px",
     "font-size": "1.2rem",
     "font-weight": "600",
@@ -196,7 +195,7 @@ app.layout = html.Div(
                         dcc.Input(id='input_light_1', value='', type='text', placeholder='Enter Light',style=item_input, className="mx-auto"),
                         html.Div(id="rain_icon_next-1"),
                         dbc.Button([
-                            html.Div(className="fa-solid fa-umbrella",
+                            html.Div(className="fa-solid fa-cloud",
                                         style=icon_button),
                             "Submit"],
                             className="mx-auto",
@@ -319,13 +318,14 @@ def update_output(value):
     mode = "gauge+number+delta",
     title = {'text': "Temperature (°C)"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
-    gauge = {'axis': {'range': [0, 60], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":10},
-             'bar': {'color': "#7CFC00", "line" : {"width":0}} ,
+    gauge = {'axis': {'range': [0, 40], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":10},
+             'bar': {'color': "#F56161", "line" : {"width":0}} ,
              'bgcolor': "white",
              'steps' : [
-                 {'range': [0, 20], 'color': "#F0FFFF"},
-                 {'range': [20, 40], 'color': "#87CEFA"},
-                 {'range': [40, 60], 'color': "#FFA07A"}],
+                 {'range': [0, 15], 'color': "#61D4FF"},
+                 {'range': [15, 25], 'color': "#68FF61"},
+                 {'range': [25, 35], 'color': "#FFFA61"},
+                 {'range': [35, 45], 'color': "#FF6161"},],
              'threshold' : {'line': {'color': "rgba(0,0,0,0)", 'width': 4}, 'thickness': 0.75, 'value': 60}},
     ))
     fig_temp.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)"})
@@ -388,11 +388,12 @@ def update_output(value):
     title = {'text': "Raindrop (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
     gauge = {'axis': {'range': [0, 100], 'tickwidth': 1,'tickcolor': "rgba(255, 255, 255,1)","dtick":10},
-             'bar': {'color': "#FFD700"},
+             'bar': {'color': "#29D6E4"},
              'bgcolor': "white",
              'steps' : [
-                 {'range': [0, 25], 'color': "#696969"},
-                 {'range': [25, 60], 'color': "#F0FFFF"},],
+                 {'range': [0, 35], 'color': "#F1F1F1"},
+                 {'range': [35, 70], 'color': "#3687DE"},
+                 {'range': [70, 100], 'color': "#44698E"}],
              'threshold' : {'line': {'color': "rgba(0,0,0,0)", 'width': 4}, 'thickness': 0.75, 'value': 100}},
     ))
     fig_rain.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)",})
@@ -429,7 +430,7 @@ def update_time(input1_value, input2_value, input3_value,n_click):
                             'Humidity9am': float(input2_value),
                             'Sunshine': float(input3_value)}, index=[1])
         value = predict_model(model, data)
-        print(value)
+
         label = value["prediction_label"].item()
         score = value["prediction_score"].item() * 100
         if label == "No":
@@ -510,16 +511,16 @@ def update_graph(button1_clicks, button2_clicks, button3_clicks):
         graph_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if graph_id == 'temperature_graph':
-        # fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop",
-        #                  color="continent", log_x=True, hover_name="country",
-        #                  size_max=60)
-        fig = px.bar(df_tem, x="time", y="value", color="time")
+        fig = px.bar(df_tem, x="time", y="value", color="time", title="Temperature",
+                    labels={'value':'Temperature (°C)', 'time':'Time'})
         
     elif graph_id == 'humidity_graph':
-        fig = px.bar(df_hum, x="time", y="value", color="time")
+        fig = px.line(df_hum, x='time', y='value', color='time', symbol="time", markers=True, 
+                      title="Humidity", labels={'value':'Humidity (%)', 'time':'Time'})
 
     else:
-        fig = px.scatter(df_light, x="time", y="value", color="time")
+        fig = px.scatter(df_light, x="time", y="value", color="time", title="Light",
+                    size='value', size_max=25, labels={'value':'Light (%)', 'time':'Time'})
         
     return fig
 
