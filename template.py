@@ -18,8 +18,6 @@ from data_graph import value_temperature_graph
 from data_graph import value_humidity_graph
 from data_graph import value_light_graph
 
-
-
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
 
 df_tem = value_temperature_graph()
@@ -27,7 +25,8 @@ df_hum = value_humidity_graph()
 df_light = value_light_graph()
 
 
-model = load_model("ada_model")
+model_past = load_model("ada_model")
+model_next = load_model("rf_model")
 # style
 
 head_style = {
@@ -127,6 +126,11 @@ item_input = {
     "width": "15vw",
 }
 
+item_icon = {
+    "margin":"0.2em", 
+    "font-size":"1.5rem"
+}
+
 change_graph_template = {
     "display": "flex",
     "flex-wrap":"wrap",
@@ -196,7 +200,7 @@ app.layout = html.Div(
                         html.Div(id="rain_icon_next-1"),
                         dbc.Button([
                             html.Div(className="fa-solid fa-cloud",
-                                        style=icon_button),
+                                        style=item_icon),
                             "Submit"],
                             className="mx-auto",
                             id="submit-next-1",
@@ -212,7 +216,7 @@ app.layout = html.Div(
                         html.Div(id="rain_icon_next-2"),
                         dbc.Button([
                             html.Div(className="fa-solid fa-umbrella",
-                                        style=icon_button),
+                                        style=item_icon),
                             "Submit"],
                             className="mx-auto",
                             id="submit-next-2",
@@ -428,7 +432,7 @@ def update_time(input1_value, input2_value, input3_value,n_click):
         data = pd.DataFrame({'Temp9am': float(input1_value),
                             'Humidity9am': float(input2_value),
                             'Sunshine': float(input3_value)}, index=[1])
-        value = predict_model(model, data)
+        value = predict_model(model_past, data)
 
         label = value["prediction_label"].item()
         score = value["prediction_score"].item() * 100
@@ -454,13 +458,17 @@ def update_time(input1_value, input2_value, input3_value,n_click):
     elif (score <= 100):
         message = "static/icon/storm.png"
 
-    return html.Div([html.Img(src=message, style=item_image), html.H4(f"Raindrop {score:.2f} %",style={"padding":"2em 0 0 0"})])
+    return html.Div([
+                html.Img(src=message, style=item_image),
+                html.H4(f"Raindrop {score:.2f} %",style={"padding":"2em 0 0 0"})
+            ])
 
 @app.callback(Output('rain_icon_next-2', 'children'),
             [Input('input_tem_2', 'value'),
             Input('input_hum_2', 'value'),
             Input('input_light_2', 'value'),
             Input("submit-next-2","n_clicks")])
+
 def update_time(input1_value, input2_value, input3_value,n_click):
     ctx = dash.callback_context
     tz = pytz.timezone('Asia/Tokyo')
@@ -470,7 +478,7 @@ def update_time(input1_value, input2_value, input3_value,n_click):
         data = pd.DataFrame({'Temp9am': float(input1_value),
                             'Humidity9am': float(input2_value),
                             'Sunshine': float(input3_value)}, index=[1])
-        value = predict_model(model, data)
+        value = predict_model(model_next, data)
         label = value["prediction_label"].item()
         score = value["prediction_score"].item() * 100
         if label == "No":
@@ -495,7 +503,10 @@ def update_time(input1_value, input2_value, input3_value,n_click):
     elif (score <= 100):
         message = "static/icon/storm.png"
 
-    return html.Div([html.Img(src=message, style=item_image), html.H4(f"Raindrop {score:.2f} %",style={"padding":"2em 0 0 0"})])
+    return html.Div([
+            html.Img(src=message, style=item_image),
+            html.H4(f"Raindrop {score:.2f} %",style={"padding":"2em 0 0 0"})
+        ])
 
 @app.callback(Output('live-graph', 'figure'),
               [Input('temperature_graph', 'n_clicks'), 
