@@ -1,4 +1,4 @@
-from dash import Dash, dash, dcc, html ,Input, Output
+from dash import Dash, dcc, html ,Input, Output
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
@@ -28,6 +28,7 @@ df_light = value_light_graph()
 
 
 model = load_model("ada_model")
+print(model)
 # style
 
 head_style = {
@@ -97,7 +98,34 @@ item_template = {
 
 item_center = {
     "display":"flex",
-    "justify-content": "center"
+    "justify-content": "center",
+}
+
+item_image = {
+    "width": "15vw", 
+    "height": "auto",
+}
+
+item_button = {
+    "background-image": "linear-gradient(to bottom, #B7E3FF, #08A2BD)",
+    "color": "white",
+    "border-radius": "20px",
+    "border": "1px solid #08A2BD",
+    "padding": "12px 24px",
+    "font-size": "1.2rem",
+    "font-weight": "600",
+    "box-shadow": "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    "transition": "all 0.3s ease",
+    "width": "15vw",
+}
+
+item_input = {
+    "textAlign": "center",
+    "border-radius": "15px",
+    "align-items": "center",
+    "display": "inline",
+    "fontSize": 22,
+    "width": "15vw",
 }
 
 change_graph_template = {
@@ -163,23 +191,35 @@ app.layout = html.Div(
                 html.Div([
                     html.Div([
                         html.Div(id="time-next-1"),
-                        dcc.Input(id='input_tem_1', value='', type='text'),
-                        dcc.Input(id='input_hum_1', value='', type='text'),
-                        dcc.Input(id='input_light_1', value='', type='text'),
+                        dcc.Input(id='input_tem_1', value='', type='text', placeholder='Enter Temperature',style=item_input, className="mx-auto"),
+                        dcc.Input(id='input_hum_1', value='', type='text', placeholder='Enter Humidity',style=item_input, className="mx-auto"),
+                        dcc.Input(id='input_light_1', value='', type='text', placeholder='Enter Light',style=item_input, className="mx-auto"),
                         html.Div(id="rain_icon_next-1"),
                         dbc.Button([
-                                    html.Div(className="fa-solid fa-droplet fa-bounce",
-                                                style=icon_button),
-                                    "SubMit"],
-                                    id="submit",
-                                    n_clicks=0),
+                            html.Div(className="fa-solid fa-umbrella",
+                                        style=icon_button),
+                            "Submit"],
+                            className="mx-auto",
+                            id="submit-next-1",
+                            n_clicks=0,
+                            style=item_button
+                        ),
                     ],style=prediction_item),
                     html.Div([
                         html.Div(id="time-next-2"),
+                        dcc.Input(id='input_tem_2', value='', type='text', placeholder='Enter Temperature',style=item_input, className="mx-auto"),
+                        dcc.Input(id='input_hum_2', value='', type='text', placeholder='Enter Humidity',style=item_input, className="mx-auto"),
+                        dcc.Input(id='input_light_2', value='', type='text', placeholder='Enter Light',style=item_input, className="mx-auto"),
                         html.Div(id="rain_icon_next-2"),
-                        dcc.Input(id='input_tem_2', value='', type='text'),
-                        dcc.Input(id='input_hum_2', value='', type='text'),
-                        dcc.Input(id='input_light_2', value='', type='text'),
+                        dbc.Button([
+                            html.Div(className="fa-solid fa-umbrella",
+                                        style=icon_button),
+                            "Submit"],
+                            className="mx-auto",
+                            id="submit-next-2",
+                            n_clicks=0,
+                            style=item_button
+                        ),
                     ],style=prediction_item)
                 ],style=item_template),
             style=item_center)
@@ -275,7 +315,7 @@ def update_time(n):
 def update_output(value):
     fig_temp = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = random.randrange(0, 60),
+    value = value_temperature(),
     mode = "gauge+number+delta",
     title = {'text': "Temperature (°C)"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
@@ -321,7 +361,7 @@ def update_output(value):
 def update_output(value):
     fig_light = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = random.randrange(0, 100),
+    value = value_light(),
     mode = "gauge+number+delta",
     title = {'text': "Light (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
@@ -343,7 +383,7 @@ def update_output(value):
 def update_output(value):
     fig_rain = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = random.randrange(0, 100),
+    value = value_raindrop(),
     mode = "gauge+number+delta",
     title = {'text': "Raindrop (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
@@ -377,23 +417,23 @@ def update_time(n):
             [Input('input_tem_1', 'value'),
             Input('input_hum_1', 'value'),
             Input('input_light_1', 'value'),
-            Input("submit","n_clicks")]
+            Input("submit-next-1","n_clicks")]
 )
 def update_time(input1_value, input2_value, input3_value,n_click):
     ctx = dash.callback_context
     tz = pytz.timezone('Asia/Singapore')
     current_time = datetime.now(tz).strftime("%H")
     score = 0
-    if "submit" == ctx.triggered_id:
-        data = pd.DataFrame({'Temp9am': int(input1_value),
-                            'Humidity9am': int(input2_value),
-                            'Sunshine': int(input3_value)}, index=[1])
+    if "submit-next-1" == ctx.triggered_id:
+        data = pd.DataFrame({'Temp9am': float(input1_value),
+                            'Humidity9am': float(input2_value),
+                            'Sunshine': float(input3_value)}, index=[1])
         value = predict_model(model, data)
+        print(value)
         label = value["prediction_label"].item()
         score = value["prediction_score"].item() * 100
         if label == "No":
             score = 100 - score
-        print(score)
     if (score < 20):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/sun.png"
@@ -414,35 +454,48 @@ def update_time(input1_value, input2_value, input3_value,n_click):
     elif (score <= 100):
         message = "static/icon/storm.png"
 
-    return html.Div([html.Img(src=message, style={"width": "15vw", "height": "auto"}), html.H4(f"Raindrop {score} %",style={"padding":"2em 0 0 0"})])
+    return html.Div([html.Img(src=message, style=item_image), html.H4(f"Raindrop {score:.2f} %",style={"padding":"2em 0 0 0"})])
 
 @app.callback(Output('rain_icon_next-2', 'children'),
-            Input("interval", "n_intervals"))
-def update_time(n):
+            [Input('input_tem_2', 'value'),
+            Input('input_hum_2', 'value'),
+            Input('input_light_2', 'value'),
+            Input("submit-next-2","n_clicks")])
+def update_time(input1_value, input2_value, input3_value,n_click):
+    ctx = dash.callback_context
     tz = pytz.timezone('Asia/Tokyo')
     current_time = datetime.now(tz).strftime("%H")
-    value = random.randrange(0, 100)
-    if (value < 20):
+    score = 0
+    if "submit-next-2" == ctx.triggered_id:
+        data = pd.DataFrame({'Temp9am': float(input1_value),
+                            'Humidity9am': float(input2_value),
+                            'Sunshine': float(input3_value)}, index=[1])
+        value = predict_model(model, data)
+        label = value["prediction_label"].item()
+        score = value["prediction_score"].item() * 100
+        if label == "No":
+            score = 100 - score
+    if (score < 20):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/sun.png"
         else :
             message = "static/icon/moon.png"
-    elif (value < 40):
+    elif (score < 40):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/day_cloudy.png"
         else :
             message = "static/icon/night_cloudy.png"
-    elif (value < 60):
+    elif (score < 60):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/day_rain.png"
         else :
             message = "static/icon/night_rain.png"
-    elif (value < 80):
+    elif (score < 80):
         message = "static/icon/rainy.png"
-    elif (value <= 100):
+    elif (score <= 100):
         message = "static/icon/storm.png"
 
-    return html.Div([html.Img(src=message, style={"width": "15vw", "height": "auto"})])
+    return html.Div([html.Img(src=message, style=item_image), html.H4(f"Raindrop {score:.2f} %",style={"padding":"2em 0 0 0"})])
 
 @app.callback(Output('live-graph', 'figure'),
               [Input('temperature_graph', 'n_clicks'), 
@@ -455,7 +508,6 @@ def update_graph(button1_clicks, button2_clicks, button3_clicks):
         graph_id = 'temperature_graph'
     else:
         graph_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        print(ctx.triggered)
 
     if graph_id == 'temperature_graph':
         # fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop",
