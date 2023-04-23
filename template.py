@@ -324,8 +324,7 @@ def update_output(value):
              'steps' : [
                  {'range': [0, 15], 'color': "#61D4FF"},
                  {'range': [15, 25], 'color': "#68FF61"},
-                 {'range': [25, 35], 'color': "#FFFA61"},
-                 {'range': [35, 45], 'color': "#FF6161"},],
+                 {'range': [25, 40], 'color': "#FFFA61"},],
              'threshold' : {'line': {'color': "rgba(0,0,0,0)", 'width': 4}, 'thickness': 0.75, 'value': 60}},
     ))
     fig_temp.update_layout(paper_bgcolor = "rgba(0,0,0,0)",font = {'color': "rgba(255, 255, 255,1)"})
