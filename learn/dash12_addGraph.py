@@ -85,10 +85,10 @@ item_template = {
     "column-gap":"8vw",
 }
 
-item_center = {
-    "display":"flex",
-    "justify-content": "center"
-}
+# item_center = {
+#     "display":"flex",
+#     "justify-content": "center"
+# }
 
 change_graph_template = {
     "display": "flex",
@@ -138,7 +138,7 @@ app.layout = html.Div(
                                         html.Div("Raindrop (%)")
                                     ],style=prediction_item)
                                 ],style=item_template),
-                            style=item_center)
+                            style=#"________")
                         ]),
                     html.Div([
                         dbc.Row(
