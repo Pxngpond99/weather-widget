@@ -8,14 +8,14 @@ import plotly.express as px
 import dash
 import pandas as pd
 
-from data import value_temperature
-from data import value_humidity
-from data import value_light
-from data import value_raindrop
+from data_complete import value_temperature
+from data_complete import value_humidity
+from data_complete import value_light
+from data_complete import value_raindrop
 
-from data_graph import value_temperature_graph
-from data_graph import value_humidity_graph
-from data_graph import value_light_graph
+from data_graph_complete import value_temperature_graph
+from data_graph_complete import value_humidity_graph
+from data_graph_complete import value_light_graph
 
 app = Dash(__name__, 
            external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])

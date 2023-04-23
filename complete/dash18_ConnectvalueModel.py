@@ -7,18 +7,26 @@ import random
 import plotly.express as px
 import dash
 import pandas as pd
+from pycaret.classification import *
+
+from data_complete import value_temperature
+from data_complete import value_humidity
+from data_complete import value_light
+from data_complete import value_raindrop
+
+from data_graph_complete import value_temperature_graph
+from data_graph_complete import value_humidity_graph
+from data_graph_complete import value_light_graph
 
 app = Dash(__name__, 
            external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME])
 
-df = px.data.gapminder()
+df_tem = value_temperature_graph()
+df_hum = value_humidity_graph()
+df_light = value_light_graph()
 
-background_style = {
-            "background-color": "rgba(100, 149, 237, 1)",
-            "background-size":"cover",
-            "background-position":"center",
-            "background-attachment":"fixed",
-      }
+model_past = load_model("ada_model")
+model_next = load_model("rf_model")
 
 head_style = {
     "font-size":"3em",
@@ -148,6 +156,10 @@ graph_button = {
     "textAlign":"center",
 }
 
+graph = {
+    "padding":"28em 3em 3em 3em",
+}
+
 app.layout = html.Div(
                 children=[
                     html.Div([
@@ -181,13 +193,35 @@ app.layout = html.Div(
                             html.Div([
                                 html.Div([
                                     html.Div(id="time-next-1"),
+                                    dcc.Input(id='input_tem_1', value='', type='text', placeholder='Enter Temperature',style=item_input, className="mx-auto"),
+                                    dcc.Input(id='input_hum_1', value='', type='text', placeholder='Enter Humidity',style=item_input, className="mx-auto"),
+                                    dcc.Input(id='input_light_1', value='', type='text', placeholder='Enter Light',style=item_input, className="mx-auto"),
                                     html.Div(id="rain_icon_next-1"),
-                                    html.Div("Raindrop (%)")
+                                    dbc.Button([
+                                        html.Div(className="fa-solid fa-cloud",
+                                                    style=item_icon),
+                                        "Submit"],
+                                        className="mx-auto",
+                                        id="submit-next-1",
+                                        n_clicks=0,
+                                        style=item_button
+                                    ),
                                 ],style=prediction_item),
                                 html.Div([
                                     html.Div(id="time-next-2"),
+                                    dcc.Input(id='input_tem_2', value='', type='text', placeholder='Enter Temperature',style=item_input, className="mx-auto"),
+                                    dcc.Input(id='input_hum_2', value='', type='text', placeholder='Enter Humidity',style=item_input, className="mx-auto"),
+                                    dcc.Input(id='input_light_2', value='', type='text', placeholder='Enter Light',style=item_input, className="mx-auto"),
                                     html.Div(id="rain_icon_next-2"),
-                                    html.Div("Raindrop (%)")
+                                    dbc.Button([
+                                        html.Div(className="fa-solid fa-umbrella",
+                                                    style=item_icon),
+                                        "Submit"],
+                                        className="mx-auto",
+                                        id="submit-next-2",
+                                        n_clicks=0,
+                                        style=item_button
+                                    ),
                                 ],style=prediction_item)
                             ],style=item_template),
                         style=item_center)
@@ -227,13 +261,14 @@ app.layout = html.Div(
                             html.Div([
                                 dcc.Graph(id='live-graph')
                             ]),
-                        ]), 
-                    )
+                        ]),style=graph
+                    ),
                 ])    
-            ],style=background_style)
+            ],id="image-background")
 
 @app.callback(Output("time", "children"), 
             Input("clock", "n_intervals"))
+
 def update_time(n):
     tz = pytz.timezone('Asia/Bangkok')
     current_time = datetime.now(tz).strftime("%I:%M:%S %p")
@@ -241,6 +276,7 @@ def update_time(n):
 
 @app.callback(Output("date", "children"), 
             Input("clock", "n_intervals"))
+
 def update_time(n):
     tz = pytz.timezone('Asia/Bangkok')
     current_date = datetime.now(tz).strftime("%a %d %B %Y")
@@ -251,10 +287,9 @@ def update_time(n):
     Input("interval", "n_intervals")
 )
 def update_output(value):
-    value = random.randrange(0, 60)
     fig_temp = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value,
+    value = value_temperature(),
     mode = "gauge+number+delta",
     title = {'text': "Temperature (°C)"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
@@ -275,10 +310,9 @@ def update_output(value):
     Input("interval", "n_intervals")
 )
 def update_output(value):
-    value = random.randrange(0, 100)
     fig_humidity = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value,
+    value = value_humidity(),
     mode = "gauge+number+delta",
     title = {'text': "Humidity (%)"},
     delta = {'reference': 40,'increasing': {'color': "#7FFF00"}},
@@ -299,10 +333,9 @@ def update_output(value):
     Input("interval", "n_intervals")
 )
 def update_output(value):
-    value = random.randrange(0, 100)
     fig_light = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value,
+    value = value_light(),
     mode = "gauge+number+delta",
     title = {'text': "Light (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
@@ -322,10 +355,9 @@ def update_output(value):
     Input("interval", "n_intervals")
 )
 def update_output(value):
-    value = random.randrange(0, 100)
     fig_rain = go.Figure(go.Indicator(
     domain = {'x': [0, 1], 'y': [0, 1]},
-    value = value,
+    value = value_raindrop(),
     mode = "gauge+number+delta",
     title = {'text': "Raindrop (%)"},
     delta = {'reference': 80,'increasing': {'color': "#7FFF00"}},
@@ -354,89 +386,143 @@ def update_time(n):
     current_time = datetime.now(tz).strftime("%I:00 %p")
     return current_time
 
+
 @app.callback(Output('rain_icon_next-1', 'children'),
-            Input("interval", "n_intervals"))
-def update_time(n):
+            [Input('input_tem_1', 'value'),
+            Input('input_hum_1', 'value'),
+            Input('input_light_1', 'value'),
+            Input("submit-next-1","n_clicks")]
+)
+def update_time(input1_value, input2_value, input3_value,n_click):
+    ctx = dash.callback_context
     tz = pytz.timezone('Asia/Singapore')
     current_time = datetime.now(tz).strftime("%H")
-    value = random.randrange(0, 100)
-    if (value < 20):
+    score = 0
+    if "submit-next-1" == ctx.triggered_id:
+        data = pd.DataFrame({'Temp9am': float(input1_value),
+                            'Humidity9am': float(input2_value),
+                            'Sunshine': float(input3_value)}, index=[1])
+        value = predict_model(model_past, data)
+
+        label = value["prediction_label"].item()
+        score = value["prediction_score"].item() * 100
+        if label == "No":
+            score = 100 - score
+    if (score < 20):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/sun.png"
         else :
             message = "static/icon/moon.png"
-    elif (value < 40):
+    elif (score < 40):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/day_cloudy.png"
         else :
             message = "static/icon/night_cloudy.png"
-    elif (value < 60):
+    elif (score < 60):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/day_rain.png"
         else :
             message = "static/icon/night_rain.png"
-    elif (value < 80):
+    elif (score < 80):
         message = "static/icon/rainy.png"
-    elif (value <= 100):
+    elif (score <= 100):
         message = "static/icon/storm.png"
 
-    return html.Img(src=message, style={"width": "15vw", "height": "auto"})
+    return html.Div([
+                html.Img(src=message, style=item_image),
+                html.H4(f"Raindrop {score:.2f} %",style={"padding":"2em 0 0 0"})
+            ])
 
 @app.callback(Output('rain_icon_next-2', 'children'),
-            Input("interval", "n_intervals"))
-def update_time(n):
+            [Input('input_tem_2', 'value'),
+            Input('input_hum_2', 'value'),
+            Input('input_light_2', 'value'),
+            Input("submit-next-2","n_clicks")])
+
+def update_time(input1_value, input2_value, input3_value,n_click):
+    ctx = dash.callback_context
     tz = pytz.timezone('Asia/Tokyo')
     current_time = datetime.now(tz).strftime("%H")
-    value = random.randrange(0, 100)
-    if (value < 20):
+    score = 0
+    if "submit-next-2" == ctx.triggered_id:
+        data = pd.DataFrame({'Temp9am': float(input1_value),
+                            'Humidity9am': float(input2_value),
+                            'Sunshine': float(input3_value)}, index=[1])
+        value = predict_model(model_next, data)
+        label = value["prediction_label"].item()
+        score = value["prediction_score"].item() * 100
+        if label == "No":
+            score = 100 - score
+    if (score < 20):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/sun.png"
         else :
             message = "static/icon/moon.png"
-    elif (value < 40):
+    elif (score < 40):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/day_cloudy.png"
         else :
             message = "static/icon/night_cloudy.png"
-    elif (value < 60):
+    elif (score < 60):
         if int(current_time) >= 6 and int(current_time) <= 18:
             message = "static/icon/day_rain.png"
         else :
             message = "static/icon/night_rain.png"
-    elif (value < 80):
+    elif (score < 80):
         message = "static/icon/rainy.png"
-    elif (value <= 100):
+    elif (score <= 100):
         message = "static/icon/storm.png"
 
-    return html.Img(src=message, style={"width": "15vw", "height": "auto"})
+    return html.Div([
+            html.Img(src=message, style=item_image),
+            html.H4(f"Raindrop {score:.2f} %",style={"padding":"2em 0 0 0"})
+        ])
 
 @app.callback(Output('live-graph', 'figure'),
               [Input('temperature_graph', 'n_clicks'), 
                Input('humidity_graph', 'n_clicks'),
                Input('light_graph', 'n_clicks')])
+
 def update_graph(button1_clicks, button2_clicks, button3_clicks):
     ctx = dash.callback_context
     if not ctx.triggered:
         graph_id = 'temperature_graph'
     else:
         graph_id = ctx.triggered[0]['prop_id'].split('.')[0]
-        print(ctx.triggered)
 
     if graph_id == 'temperature_graph':
-        fig = px.scatter(df, x="gdpPercap", y="lifeExp", size="pop",
-                         color="continent", log_x=True, hover_name="country",
-                         size_max=60)
+        fig = px.bar(df_tem, x="time", y="value", color="time", title="Temperature",
+                    labels={'value':'Temperature (°C)', 'time':'Time'})
         
     elif graph_id == 'humidity_graph':
-        fig = px.scatter(df, x="gdpPercap", y="lifeExp",
-                        color="continent", log_x=True, hover_name="country",
-                        size_max=60)
-    else:
-        fig = px.scatter(df, x="lifeExp", y="gdpPercap", size="pop",
-                         color="continent", log_y=True, hover_name="country",
-                         size_max=60)
+        fig = px.line(df_hum, x='time', y='value', color='time', symbol="time", markers=True, 
+                      title="Humidity", labels={'value':'Humidity (%)', 'time':'Time'})
 
+    else:
+        fig = px.scatter(df_light, x="time", y="value", color="time", title="Light",
+                    size='value', size_max=25, labels={'value':'Light (%)', 'time':'Time'})
+        
     return fig
+
+@app.callback(Output('image-background', 'style'),
+            Input('clock', 'n_intervals'))
+def update_time(n):
+    tz = pytz.timezone('Asia/Bangkok')
+    hour = int(datetime.now(tz).strftime("%H"))
+    if (hour >= 8 and hour <= 16) :
+        message = "url('static/background/day.jpg')"
+    elif (hour >= 6 and hour <= 8) :
+        message = "url('static/background/mornin.jpg')"
+    elif (hour >= 16 and hour <= 18) :
+        message = "url('static/background/morning.jpg')"
+    else :
+        message = "url('static/background/night.jpg')"
+    return {
+            "background-image": message,
+            "background-size":"cover",
+            "background-position":"center",
+            "background-attachment":"fixed"
+      }
 
 if __name__ == "__main__":
     app.run_server(debug=True)
