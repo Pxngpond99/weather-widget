@@ -33,9 +33,10 @@ def value_temperature():
 
     result_tem = values_tem.sum(numeric_only=True)
     count_tem = values_tem["value"].count()
-    print(result_tem)
 
     print("temperature",result_tem["value"] / count_tem)
+    if len(result_tem) == "NaN":
+      return "-"
     return result_tem["value"] / count_tem
 
 def value_humidity():
@@ -50,6 +51,8 @@ def value_humidity():
     count_hum = values_hum["value"].count()
 
     print("humididt:",result_hum["value"] / count_hum)
+    if len(result_hum) == "NaN":
+       return "-"
     return result_hum["value"] / count_hum
 
 def value_light():
@@ -64,6 +67,8 @@ def value_light():
     count_light = values_light["value"].count()
     
     print("light:",result_light["value"] / count_light)
+    if len(result_light) == "NaN":
+       return "-"
     return result_light["value"] / count_light
 
 def value_raindrop():
@@ -78,6 +83,8 @@ def value_raindrop():
     count_rain = values_rain["value"].count()
     
     print("raindrop:",result_rain["value"] / count_rain)
+    if len(result_rain) == "NaN":
+       return "-"
     return result_rain["value"] / count_rain
 
 value_temperature()
