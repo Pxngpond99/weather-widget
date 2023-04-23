@@ -82,7 +82,39 @@ item_template = {
 
 item_center = {
     "display":"flex",
-    "justify-content": "center"
+    "justify-content": "center",
+}
+
+item_image = {
+    "width": "15vw", 
+    "height": "auto",
+}
+
+item_button = {
+    "background-image": "linear-gradient(to bottom, #80EBD9, #08C8A8)",
+    "color": "white",
+    "border-radius": "20px",
+    "border": "1px solid #08C8A8",
+    "padding": "12px 24px",
+    "font-size": "1.2rem",
+    "font-weight": "600",
+    "box-shadow": "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    "transition": "all 0.3s ease",
+    "width": "15vw",
+}
+
+item_input = {
+    "textAlign": "center",
+    "border-radius": "15px",
+    "align-items": "center",
+    "display": "inline",
+    "fontSize": 22,
+    "width": "15vw",
+}
+
+item_icon = {
+    "margin":"0.2em", 
+    "font-size":"1.5rem"
 }
 
 change_graph_template = {

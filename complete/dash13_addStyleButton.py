@@ -87,7 +87,39 @@ item_template = {
 
 item_center = {
     "display":"flex",
-    "justify-content": "center"
+    "justify-content": "center",
+}
+
+item_image = {
+    "width": "15vw", 
+    "height": "auto",
+}
+
+item_button = {
+    "background-image": "linear-gradient(to bottom, #80EBD9, #08C8A8)",
+    "color": "white",
+    "border-radius": "20px",
+    "border": "1px solid #08C8A8",
+    "padding": "12px 24px",
+    "font-size": "1.2rem",
+    "font-weight": "600",
+    "box-shadow": "0px 4px 4px rgba(0, 0, 0, 0.25)",
+    "transition": "all 0.3s ease",
+    "width": "15vw",
+}
+
+item_input = {
+    "textAlign": "center",
+    "border-radius": "15px",
+    "align-items": "center",
+    "display": "inline",
+    "fontSize": 22,
+    "width": "15vw",
+}
+
+item_icon = {
+    "margin":"0.2em", 
+    "font-size":"1.5rem"
 }
 
 change_graph_template = {
@@ -143,22 +175,46 @@ app.layout = html.Div(
                             ],md=9),
                         ]),
                     ]),
+                    
                     html.Div([
-                            dbc.Row(
+                        dbc.Row(
+                            html.Div([
                                 html.Div([
-                                    html.Div([
-                                        html.Div(id="time-next-1"),
-                                        html.Div(id="rain_icon_next-1"),
-                                        html.Div("Raindrop (%)")
-                                    ],style=prediction_item),
-                                    html.Div([
-                                        html.Div(id="time-next-2"),
-                                        html.Div(id="rain_icon_next-2"),
-                                        html.Div("Raindrop (%)")
-                                    ],style=prediction_item)
-                                ],style=item_template),
-                            style=item_center)
-                        ]),
+                                    html.Div(id="time-next-1"),
+                                    dcc.Input(id='input_tem_1', value='', type='text', placeholder='Enter Temperature',style=item_input, className="mx-auto"),
+                                    dcc.Input(id='input_hum_1', value='', type='text', placeholder='Enter Humidity',style=item_input, className="mx-auto"),
+                                    dcc.Input(id='input_light_1', value='', type='text', placeholder='Enter Light',style=item_input, className="mx-auto"),
+                                    html.Div(id="rain_icon_next-1"),
+                                    dbc.Button([
+                                        html.Div(className="fa-solid fa-cloud",
+                                                    style=item_icon),
+                                        "Submit"],
+                                        className="mx-auto",
+                                        id="submit-next-1",
+                                        n_clicks=0,
+                                        style=item_button
+                                    ),
+                                ],style=prediction_item),
+                                html.Div([
+                                    html.Div(id="time-next-2"),
+                                    dcc.Input(id='input_tem_2', value='', type='text', placeholder='Enter Temperature',style=item_input, className="mx-auto"),
+                                    dcc.Input(id='input_hum_2', value='', type='text', placeholder='Enter Humidity',style=item_input, className="mx-auto"),
+                                    dcc.Input(id='input_light_2', value='', type='text', placeholder='Enter Light',style=item_input, className="mx-auto"),
+                                    html.Div(id="rain_icon_next-2"),
+                                    dbc.Button([
+                                        html.Div(className="fa-solid fa-umbrella",
+                                                    style=item_icon),
+                                        "Submit"],
+                                        className="mx-auto",
+                                        id="submit-next-2",
+                                        n_clicks=0,
+                                        style=item_button
+                                    ),
+                                ],style=prediction_item)
+                            ],style=item_template),
+                        style=item_center)
+                    ]),
+
                     html.Div([
                         dbc.Row(
                             dbc.CardBody([
